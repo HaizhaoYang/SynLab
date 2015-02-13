@@ -1,0 +1,5 @@
+This package contains numerical examples (not including the crystal image example) in [1].
+The crystal image example is in another application package.
+[1] H. Yang and L. Ying. Robustness analysis of synchrosqueezed transforms. Preprint.
+
+If you have further questions, please contact Haizhao Yang at haizhao@stanford.edu.

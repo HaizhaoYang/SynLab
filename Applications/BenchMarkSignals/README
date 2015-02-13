@@ -1,0 +1,3 @@
+This package contains the test of some benchmark signals provided by the SEG 2014 Time-Frequency Workshop. Please see the PDF file ‘TimeFrequencyWorkshop.pdf’ for detailed introduction to these signals. There will be a shot report for a summary of all time-frequency analysis tools tested in this workshop.
+
+If you have further questions on these codes, please contact Haizhao Yang at haizhao@stanford.edu.
