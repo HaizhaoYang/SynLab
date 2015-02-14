@@ -1,0 +1,7 @@
+This package contains basic routines developed in [1] for atomic crystal images using 2D synchrosqueezed transforms [2][3][4]. This method is adapted to canvas analysis in the paper [5].
+
+[1] H. Yang, J. Lu, and L. Ying. Crystal image analysis using 2d synchrosqueezed trans- forms. arXiv:1402.1262 [math.NA], Submitted on 6 Feb 2014.[2] H. Yang and L. Ying. Synchrosqueezed wave packet transform for 2d mode decompo- sition. SIAM Journal on Imaging Sciences, 6(4):1979–2009, 2013.[3] H. Yang and L. Ying. Synchrosqueezed curvelet transform for two-dimensional mode decomposition. SIAM Journal on Mathematical Analysis, 46(3):2052–2083, 2014.
+[4] H. Yang and L. Ying. Robustness analysis of synchrosqueezed transforms. Preprint.
+[5] H. Yang, J. Lu, W. P. Brown, I. Daubechies, and L. Ying, Quantitative Canvas Weave Analysis Using 2D Synchrosqueezed Transforms. Preprint. 
+
+If you have further questions, please contact Haizhao Yang at haizhao@stanford.edu.

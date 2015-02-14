@@ -33,6 +33,8 @@ tempPath = [tempPath front 'results' back];
 
 tempPath = [tempPath front 'Source' back];
 
+tempPath = [tempPath front 'Source' back 'colormap' back];
+
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'demo' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'src' back];
@@ -43,6 +45,10 @@ tempPath = [tempPath front 'Source' back 'SS_WP_1D' back 'src' back];
 
 % Applications folder
 tempPath = [tempPath front 'Applications' back];
+
+tempPath = [tempPath front 'Applications' back 'CanvasAnalysis' back];
+tempPath = [tempPath front 'Applications' back 'CanvasAnalysis' back 'demo' back];
+tempPath = [tempPath front 'Applications' back 'CanvasAnalysis' back 'src' back];
 
 tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back];
 tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'demo' back];
@@ -68,12 +74,14 @@ disp('Begin to compile MEX files...');
 rootDir = pwd;
 cd(['Source' CSPT 'SS_CT_2D' CSPT 'src' CSPT]);
 mex SS_polar.c;
+mex SS_polar_v2.c;
 cd(rootDir);
 cd(['Applications' CSPT 'CrystalAnalysis' CSPT 'src' CSPT]);
 mex LocBin.c;
-cd(rootDir);
-cd(['Applications' CSPT 'CrystalAnalysis' CSPT 'src' CSPT]);
 mex LocWeight.c;
+cd(rootDir);
+cd(['Applications' CSPT 'CanvasAnalysis' CSPT 'src' CSPT]);
+mex LocWavVec_v2.c;
 cd(rootDir);
 
 disp('Path set!');
