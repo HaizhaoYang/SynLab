@@ -33,7 +33,7 @@ function [HorThre,VerThre,HorAgl,VerAgl,Xwhole,orgSize] = fastAnalysis(name,t_sc
 %   Xwhole   the canvas image
 %   orgSize  the size of the canvas image
 %
-% Remark: Usually, you could tune two parameters, [t_sc s_sc d] according 
+% Remark: Usually, you could tune two parameters, [t_sc s_sc] according 
 %         to the paper "Robustness Analysis of Synchrosqueezed Transforms",
 %         H. Yang and L. Ying. For clean data, [t_sc s_sc] = [1 0.8]. For 
 %         noisy data, [t_sc s_sc] = [0.8 0.625]. The analysis is not
