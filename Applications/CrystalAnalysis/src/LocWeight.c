@@ -22,7 +22,10 @@ int findmax2(double *A, int st, int L) {
 }
 
 
-/*This function computes the agl in num_wave directions*/
+/*This function computes the local wave vectors via weighted average.
+ 
+ By Haizhao Yang and Jianfeng Lu
+ */
 void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                  int nrhs, const mxArray *prhs[]) /* Input variables */
 {
@@ -34,8 +37,6 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
 #define ss_energy(ci,di,ai,bi) ss_energy[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
 #define ss_avgdx(ci,di,ai,bi) ss_avgdx[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
 #define ss_avgdy(ci,di,ai,bi) ss_avgdy[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
-    /* #define agl2(ai,bi,j) agl2[ai+dims[0]*(bi+dims[1]*j)]
-     #define R2(ai,bi,j) R2[ai+dims[0]*(bi+dims[1]*j)] */
 #define pi 3.141592653589793
     
     size_t ai, bi, ci, di, k, j, cnt, cnt2;

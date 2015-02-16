@@ -3,6 +3,43 @@ function [HorThre,VerThre,HorAgl,VerAgl,Xwhole,orgSize] = fastAnalysis(name,t_sc
 % This code extracts canvas texture from a real painting and uses 2D
 % synchrosqueezed transforms to count threads in the canvas texture.
 %
+% Input:
+%   name    name of the data document
+%   t_sc    scaling parameter for radius in SST
+%               [default set to 1-1/8]
+%   s_sc    scaling parameter for angle in SST
+%               [default set to 1/2+1/8]
+%   epsl    a threshold in SST, [default set to 1e-4] 
+%   rad     the smallest size of supports of wave packets
+%               [default set to 1]
+%   red     the redundancy parameter, red(1) for angle, red(2) for radii
+%   numGrid, number of grid points in the angle domain of the SST
+%   NL      controls the range of interesting thread angle, e.g., the range
+%           of the thread angle is [-180*NL/numGrid, 180*NL/numGrid]
+%           degrees
+%   numdiv  a parameter for the size of a piece of canvas, if your RAM is
+%           about 32GB, you could choose 2, otherwise, numdiv should be larger
+%   numdiv2 a parameter to down sample the canvas to save memory, if your RAM is
+%           about 32GB, you could choose 4, otherwise, numdiv2 should be larger
+%   div     a parameter to tune the resolution of the SST in the spatial
+%           domain, if your RAM is about 32GB, you could choose 4, otherwise, 
+%           div should be larger
+%
+% Output:
+%   HorThre  horizontal thread count
+%   VerThre  vertical thread count
+%   HorAgl   horizontal thread angle
+%   VerAgl   vertical thread angle
+%   Xwhole   the canvas image
+%   orgSize  the size of the canvas image
+%
+% Remark: Usually, you could tune two parameters, [t_sc s_sc d] according 
+%         to the paper "Robustness Analysis of Synchrosqueezed Transforms",
+%         H. Yang and L. Ying. For clean data, [t_sc s_sc] = [1 0.8]. For 
+%         noisy data, [t_sc s_sc] = [0.8 0.625]. The analysis is not
+%         sensitive to other parameters.
+%
+%
 % By Haizhao Yang
 %==========================================================================
 
@@ -12,9 +49,9 @@ if nargin<2, t_sc = 1; end;
 if nargin<3, s_sc = 0.8; end;
 if nargin<4, epsl = 1e-4; end;
 if nargin<5, rad = 1; end;
-if nargin<6, red = [8 1]; end;
+if nargin<6, red = [8 5]; end;
 if nargin<7, NL = 15; end;
-if nargin<8, numGrid = 40; end;
+if nargin<8, numGrid = 90; end;
 if nargin<9, numdiv = 2; end;
 if nargin<10, numdiv2 = 4; end;
 if nargin<11, div = 4; end;
@@ -181,17 +218,17 @@ VerAgl = VerAgl(  ceil(range1(1)*m/rm):floor(range1(end)*m/rm) , ceil(range2(1)*
 
 pic=figure;
 imagesc([0,1],[0,1],HorThre);axis image;colorbar;caxis([R_lowh R_highh]/realsize(1));head = sprintf('Horizontal Thread Count, mean=%f',mean(HorThre(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic = figure;imagesc([0,1],[0,1],HorAgl);axis image;colorbar;head = sprintf('Horizontal Thread Angle, mean=%f',mean(HorAgl(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic=figure;
 imagesc([0,1],[0,1],VerThre);axis image;colorbar;caxis([R_lowv R_highv]/realsize(2));head = sprintf('Vertical Thread Count, mean=%f',mean(VerThre(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic = figure;imagesc([0,1],[0,1],VerAgl);axis image;colorbar;head = sprintf('Vertical Thread Angle, mean=%f',mean(VerAgl(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 HorThreDev = HorThre - mean(HorThre(:));
 HorAglDev = HorAgl - mean(HorAgl(:));
@@ -199,16 +236,16 @@ VerThreDev = VerThre - mean(VerThre(:));
 VerAglDev = VerAgl - mean(VerAgl(:));
 pic=figure;
 imagesc([0,1],[0,1],HorThreDev);axis image;colorbar;head = sprintf('Horizontal Thread Count Deviation, mean=%f',mean(HorThre(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic = figure;imagesc([0,1],[0,1],HorAglDev);axis image;colorbar;head = sprintf('Horizontal Thread Angle Deviation, mean=%f',mean(HorAgl(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic=figure;
 imagesc([0,1],[0,1],VerThreDev);axis image;colorbar;head = sprintf('Vertical Thread Count Deviation, mean=%f',mean(VerThre(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 pic = figure;imagesc([0,1],[0,1],VerAglDev);axis image;colorbar;head = sprintf('Vertical Thread Angle Deviation, mean=%f',mean(VerAgl(:)));title(head);axis tight;
-xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);colormap(brewermap([],'*RdYlBu'));
+xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
 save(sprintf('%sresults.mat',name));

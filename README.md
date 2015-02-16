@@ -1,6 +1,6 @@
 # SynLab
 
-0. OVERVIEW
+1. OVERVIEW
 
 1D synchrosqueezed wave packet transforms (SSWPT):    
 Analyzing instantaneous properties (instantaneous frequencies, phases and amplitudes) of non-linear oscillatory signals in a superposition. 
@@ -9,11 +9,14 @@ Analyzing instantaneous properties (instantaneous frequencies, phases and amplit
 Anlayzing local properties of non-linear oscillatory textures in a superposition. 
 
 Applications:    
+
 Geophysics:  seismic wave field separation and ground-roll removal.    
+
 Materials science:  atomic crystal image analysis, grain boundary and local defects identification, elastic deformation estimation.    
+
 Art:  Canvas painting analysis for art forensics.
 
-1. INTRODUCTION
+2. INTRODUCTION
 
 SynLab is a collection of Matlab and MEX routines which implements 1D and 2D synchrosqueezed transforms proposed in [1]-[4]. It contains numerical examples in [2][5][6].
 
@@ -29,10 +32,14 @@ SynLab is a collection of Matlab and MEX routines which implements 1D and 2D syn
 
 [6] H. Yang, J. Lu, W. P. Brown, I. Daubechies, and L. Ying, Quantitative Canvas Weave Analysis Using 2D Synchrosqueezed Transforms. Preprint. 
 
-2. INSTALLING SYNLAB
+3. INSTALLING SYNLAB
 
 run the file SetPath.m first. It will automatically add all the MATLAB codes to your MATLAB path and compile all MEX files. After this, you can run all demo codes to see how to use this tool box.
 
-3. COPY RIGHT
+4. COPY RIGHT
 
-SynLab is copyright reserved. For further information, please contact Haizhao Yang at haizhao@math.stanford.edu
+SynLab is copyright reserved. For further information, please contact 
+Contact information
+Haizhao Yang at haizhao@stanford.edu
+Jianfeng Lu at jianfeng@math.duke.edu
+Lexing Ying at lexing@math.stanford.edu

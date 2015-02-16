@@ -33,8 +33,6 @@ tempPath = [tempPath front 'results' back];
 
 tempPath = [tempPath front 'Source' back];
 
-tempPath = [tempPath front 'Source' back 'colormap' back];
-
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'demo' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'src' back];

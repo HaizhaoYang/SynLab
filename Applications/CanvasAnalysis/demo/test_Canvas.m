@@ -1,7 +1,9 @@
-% This code analyze real canvas images in our paper. The real data is
-% available per request.
+% This code analyze real canvas images in our paper. The data "RyderPart" is
+% available upon request. The other data is from the RKD database available
+% at http://english.rkd.nl/Services/image-sharing
 %
-% Images have to be stored in a mat file with a variable name as X
+% Images have to be stored in a mat file with a variable name as X. Please
+% see the code fastAnalysis.m for more information about the input.
 %
 % By Haizhao Yang
 
