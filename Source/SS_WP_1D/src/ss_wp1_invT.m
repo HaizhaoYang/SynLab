@@ -1,4 +1,4 @@
-function [mode, amplt, num_mode] = ss_wp_invT_1D(T, coef, kk, is_real, N, R_high, R_low, rad, is_cos, t_sc, h, is_fac, wedge_length_coarse)
+function [mode, amplt, num_mode] = ss_wp1_invT(T, coef, kk, is_real, N, R_high, R_low, rad, is_cos, t_sc, h, is_fac, wedge_length_coarse)
 % ss_wp_invT_1D.m - 1D inverse Synchrosqueezed Wave Packet Transform
 %
 % Inputs

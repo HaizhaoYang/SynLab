@@ -1,4 +1,4 @@
-function [T_f coef kk] = ss_wp_fwd_1D(x,is_real,is_unif,typeNUFFT,xo,NG,R_high,R_low,rad,is_cos,t_sc,red,epsl,h,is_fac,wedge_length_coarse)
+function [T_f coef kk] = ss_wp1_fwd(x,is_real,is_unif,typeNUFFT,xo,NG,R_high,R_low,rad,is_cos,t_sc,red,epsl,h,is_fac,wedge_length_coarse)
 % ss_wp_fwd_1D.m - 1D Synchrosqueezed Wave Packet Transform
 %
 % Inputs

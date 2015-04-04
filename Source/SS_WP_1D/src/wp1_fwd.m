@@ -50,62 +50,8 @@ N = length(x);
 if is_unif
     X = fftshift(fft(ifftshift(x)))/sqrt(N);
 else
-    switch typeNUFFT
-        case 1
-            % Air Force Research Lab
-            sampledFreq = (-N/2+mod(N,2)/2):1:(N/2-1/(1+mod(N,2)));
-            Desired_accuracy = 12;%6=single precision, 12=double precision.
-            sampledSpace = xo(:)*2*pi;%assuming that xo in [0,1)
-            X = FGG_1d_type1(x(:),sampledFreq(:),N,Desired_accuracy)/N;%,sampledSpace(:))/N;
-            X = transpose(X);
-        case 2
-            % Candes
-            sampledFreq = (-pi+mod(N,2)*pi/N):2*pi/N:(pi-2*pi/N/(1+mod(N,2)));
-            X = USFFT(x(:),sampledFreq(:),16,8,0)/N;
-            X = transpose(X);
-            %             if mod(N,2)==0
-            %                 sampledFreq = (-pi+mod(N,2)*pi/N):2*pi/N:(pi-2*pi/N/(1+mod(N,2)));
-            %                 X = USFFT(x(:),sampledFreq(:),16,8,0)/N;
-            %                 X = transpose(X);
-            %             else
-            %                 if 0
-            %                     sampledFreq = (-pi):2*pi/(N+1):(pi-2*pi/(N+1));
-            %                     X = USFFT(x(:),sampledFreq(:),16,8,1)/N;
-            %                     X = transpose(X);
-            %                     X = X(2:end);
-            %                 else
-            %                     sampledFreq = (-pi+mod(N,2)*pi/N):2*pi/N:(pi-2*pi/N/(1+mod(N,2)));
-            %                     X = USFFT(x(:),sampledFreq(:),16,8,0)/N;
-            %                     X = transpose(X);
-            %                 end
-            %             end
-        case 3
-            % Greengard
-            Desired_accuracy = 1e-12;
-            Nx = length(xo);
-            xmin = min(xo); xmax = max(xo);
-            dx = (xmax-xmin)/(Nx-1);
-            sampledSpace = (xo(:)-xmin)*2*pi/(dx+xmax)-pi;
-            X = nufft1d1(N,sampledSpace,x,-1,Desired_accuracy,N);
-            X= transpose(X);
-        case 4
-            % direct non-uniform Fourier transform
-            Nx = length(xo);
-            xmin = min(xo); xmax = max(xo);
-            dx = (xmax-xmin)/(Nx-1);
-            sampledSpace = (xo(:)-xmin)*2*pi/(dx+xmax);
-            X = (dft1(ifftshift(x),sampledSpace,N))/N;
-    end
+    error('Please use a non-uniform FFT!');
 end
-
-% temp = fftshift(fft(ifftshift(x)))/sqrt(N);
-% %temp = fftshift(fft(x)/N);
-% figure;
-% subplot(2,2,1);plot(real(temp));axis tight;
-% subplot(2,2,2);plot(imag(temp));axis tight;
-% subplot(2,2,3);plot(real(X));axis tight;
-% subplot(2,2,4);plot(imag(X));axis tight;
-% %pause;
 
 if mod(N,2) == 0
     pN = N/2;

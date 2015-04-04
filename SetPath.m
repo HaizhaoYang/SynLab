@@ -66,6 +66,11 @@ tempPath = [tempPath front 'Applications' back 'SeismicWaveField' back 'data' ba
 tempPath = [tempPath front 'Applications' back 'SeismicWaveField' back 'src' back];
 tempPath = [tempPath front 'Applications' back 'SeismicWaveField' back 'demo' back];
 
+tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back];
+tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'data' back];
+tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'src' back];
+tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'demo' back];
+
 path(tempPath);
 
 disp('Begin to compile MEX files...');
