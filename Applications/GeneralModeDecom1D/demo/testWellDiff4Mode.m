@@ -14,12 +14,12 @@ close all;
 % By Haizhao Yang
 
 %%
-for dif = 1:-0.2:0
+for dif = 1:-0.1:0
     %set up data
     N = 8192;
     x = [0:N-1]/N;
     fff = zeros(1,N);
-    amp = 0.005;
+    amp = 0.01;
     is_plot = 0;
     FF = 160;
     
@@ -34,19 +34,19 @@ for dif = 1:-0.2:0
     ins_amplt(1,:) = 1+0.05*sin(4*pi*x);
     f1 = ins_amplt(1,:).*gen_shape2(FF*xx,3);
     
-    yy = x + amp*sin(2*pi*x+dif);
-    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*x+dif))*FF;
+    yy = x + dif + amp*sin(2*pi*(x+dif));
+    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*(x+dif)))*FF;
     f2 = zeros(1,N);
     ins_amplt(2,:) = 1+0.1*sin(2*pi*x);
     f2 = ins_amplt(2,:).*gen_shape(FF*yy,2);
     
-    zz = x + amp*sin(2*pi*x+dif*2);
+    zz = x + dif*2 + amp*sin(2*pi*(x+dif*2));
     ins_freq(3,:) = (1+amp*2*pi*cos(2*pi*x+dif*2))*FF;
     f3 = zeros(1,N);
     ins_amplt(3,:) = 1+0.2*sin(2*pi*x);
     f3 = ins_amplt(3,:).*gen_shape(FF*zz,1);
     
-    ww = x + amp*sin(2*pi*x+dif*3);
+    ww = x + dif*3 + amp*sin(2*pi*(x+dif*3));
     ins_freq(4,:) = (1+amp*2*pi*cos(2*pi*x+dif*3))*FF;
     f4 = zeros(1,N);
     ins_amplt(4,:) = 1+0.2*sin(2*pi*x);

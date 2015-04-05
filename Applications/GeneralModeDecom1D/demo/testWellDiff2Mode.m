@@ -15,12 +15,12 @@ close all;
 % By Haizhao Yang
 
 %%
-for dif = 1:-0.2:0
+for dif = 1:-0.05:0
     %set up data
     N = 2^11;
     x = [0:N-1]/N;
     fff = zeros(1,N);
-    amp = 0.005;
+    amp = 0.05;
     is_plot = 0;
     
     num_group = 2;
@@ -35,8 +35,8 @@ for dif = 1:-0.2:0
     am = 1+0.05*sin(4*pi*x);
     f1 = am.*gen_shape(FF*xx,1);
     
-    yy = x + amp*sin(2*pi*x+dif);
-    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*x+dif))*FF;
+    yy = x +dif + amp*sin(2*pi*(x+dif));
+    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*(x+dif)))*FF;
     f2 = zeros(1,N);
     bm = 1+0.1*sin(2*pi*x);
     f2 = bm.*gen_shape(FF*yy,2);
@@ -122,12 +122,12 @@ for dif = 1:-0.2:0
     posVec = pos-100:pos+100;
     posVec = posVec - min(posVec(1)-1,0);
     posVec = posVec - max(posVec(end)-N,0);
-    subplot(2,2,3); hold on; plot(x(pos-100:pos+100),general_shape_comp(1,pos-100:pos+100),'r'); plot(x(pos-100:pos+100),f1(pos-100:pos+100),'b');axis square;title('1st mode');
+    subplot(2,2,3); hold on; plot(x(posVec),general_shape_comp(1,posVec),'r'); plot(x(posVec),f1(posVec),'b');axis square;title('1st mode');
     [val pos] = max(err2);
     posVec = pos-100:pos+100;
     posVec = posVec - min(posVec(1)-1,0);
     posVec = posVec - max(posVec(end)-N,0);
-    subplot(2,2,4); hold on; plot(x(pos-100:pos+100),general_shape_comp(2,pos-100:pos+100),'r'); plot(x(pos-100:pos+100),f2(pos-100:pos+100),'b');axis square;title('2nd mode');
+    subplot(2,2,4); hold on; plot(x(posVec),general_shape_comp(2,posVec),'r'); plot(x(posVec),f2(posVec),'b');axis square;title('2nd mode');
     
     if is_plot
         figure;

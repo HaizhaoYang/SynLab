@@ -14,7 +14,7 @@ close all;
 % By Haizhao Yang
 
 %%
-for dif = 1:-0.2:0
+for dif = 1:-0.1:0
     %set up data
     N = 8192;
     x = [0:N-1]/N;
@@ -35,15 +35,15 @@ for dif = 1:-0.2:0
     f1 = ins_amplt(1,:).*gen_shape2(F1*xx,3);
     
     F2 = 160;
-    yy = x + amp*sin(2*pi*x+dif);
-    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*x+dif))*F2;
+    yy = x + dif + amp*sin(2*pi*(x+dif));
+    ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*(x+dif)))*F2;
     f2 = zeros(1,N);
     ins_amplt(2,:) = 1+0.1*sin(2*pi*x);
     f2 = ins_amplt(2,:).*gen_shape(F2*yy,2);
     
     F3 = 160;
-    zz = x + amp*sin(2*pi*x+dif*2);
-    ins_freq(3,:) = (1+amp*2*pi*cos(2*pi*x+dif*2))*F3;
+    zz = x + dif*2 + amp*sin(2*pi*x+dif*2);
+    ins_freq(3,:) = (1+amp*2*pi*cos(2*pi*(x+dif*2)))*F3;
     f3 = zeros(1,N);
     ins_amplt(3,:) = 1+0.2*sin(2*pi*x);
     f3 = ins_amplt(3,:).*gen_shape(F3*zz,1);
