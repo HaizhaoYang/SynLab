@@ -52,17 +52,17 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
         for (bi=0;bi<Nss[1];bi++) {
             if (kk1(ai,bi)<EXT) {
                 r = sqrt(kk1(ai,bi)*kk1(ai,bi)+kk2(ai,bi)*kk2(ai,bi));
-                if (kk2(ai,bi)>=0) {
-                    agl = fmod(acos(kk1(ai,bi)/r),num_dir);
+                if (kk1(ai,bi)>=0) {
+                    agl = fmod(acos(kk2(ai,bi)/r),num_dir);
                 }
                 else
-                    agl = fmod(3.1415926-acos(kk1(ai,bi)/r),num_dir);
+                    agl = fmod(3.1415926-acos(kk2(ai,bi)/r),num_dir);
                 loc1 = round((r-R_low)/dr);
                 loc2 = round(agl/da);
                 
                 temp_energy = ccr(ai,bi)*ccr(ai,bi) + cci(ai,bi)*cci(ai,bi);
                 if (loc2==0){
-                    if (kk2(ai,bi)>=0) {
+                    if (kk1(ai,bi)>=0) {
                         kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
                         avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
                         avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
@@ -73,7 +73,7 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                         avgdy(loc1,NB2-1,ai,bi) = avgdy(loc1,NB2-1,ai,bi) + r * sin(agl) * temp_energy;
                     }
                 }else if (loc2==NB2-1){
-                    if (kk2(ai,bi)>=0) {
+                    if (kk1(ai,bi)>=0) {
                         kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
                         avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
                         avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;

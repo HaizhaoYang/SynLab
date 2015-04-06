@@ -120,8 +120,8 @@ for cntm = 1:numm
         Thread_h = zeros(SPg);
         Angle_h = zeros(SPg);
         L = size(ss_energy,1);
-        [Angle_h,Thread_h] = LocWavVec_v2(ss_energy,avgdx,avgdy,NB(2)-NL+1,NL);
-        Angle_h = mod(Angle_h+pi/2,pi)-pi/2;
+        [Angle_h,Thread_h] = LocWavVec_v2(ss_energy,avgdx,avgdy,round(NB(2)/2+1-NL),round(NB(2)/2+NL));
+        Angle_h = Angle_h-pi/2;
         xx = Thread_h.*cos(Angle_h)/realsize(1); yy = Thread_h.*sin(Angle_h)/realsize(2);
         Thread_h = sqrt(xx.^2+yy.^2);
         Angle_h = atan(yy./xx)*180/pi;
@@ -145,8 +145,8 @@ for cntm = 1:numm
         Thread_v = zeros(SPg);
         Angle_v = zeros(SPg);
         L = size(ss_energy,1);
-        [Angle_v Thread_v] = LocWavVec_v2(ss_energy,avgdx,avgdy,round(NB(2)/2+1-NL),round(NB(2)/2+NL));
-        Angle_v = Angle_v-pi/2;
+        [Angle_v Thread_v] = LocWavVec_v2(ss_energy,avgdx,avgdy,NB(2)-NL+1,NL);
+        Angle_v = mod(Angle_v+pi/2,pi)-pi/2;
         xx = Thread_v.*cos(Angle_v)/realsize(2); yy = Thread_v.*sin(Angle_v)/realsize(1);
         Thread_v = sqrt(xx.^2+yy.^2);
         Angle_v = atan(yy./xx)*180/pi;
@@ -248,4 +248,4 @@ xlabel('x_1');ylabel('x_2');axis([0 1 0 1]);
 pic = figure;imagesc([0,1],[0,1],VerAglDev);axis image;colorbar;head = sprintf('Vertical Thread Angle Deviation, mean=%f',mean(VerAgl(:)));title(head);axis tight;
 xlabel('x_1');ylabel('x_2');axis([0 1 0 1]); 
 
-save(sprintf('%sresults.mat',name));
+save(sprintf('results/%sresults.mat',name));

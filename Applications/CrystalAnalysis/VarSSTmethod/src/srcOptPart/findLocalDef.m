@@ -25,26 +25,26 @@ function [G,curlG] = findLocalDef(fff,angles,radii,masses,weights,numIter1,numIt
 
 %% check input and set default parameters and flags
 if nargin < 9
-    GPUflag = false;
+   GPUflag = false;
 end
 if nargin < 8
-    plotFIG = false;
+   plotFIG = false;
 end
 if nargin <7
-    numIter2 = 20;
+  numIter2 = 20;
 end
 if nargin < 6
-    numIter1 = 20;
+  numIter1 = 20;
 end
 if nargin < 5
-    weights = [1 2 .1 .1];
+  weights = [1 2 .1 .1];
 end
 if nargin < 4
-    load GB1_207.mat;
-    fff = phi;
-    angles = agl;
-    radii = R;
-    masses = W_sec;
+  load GB1_207.mat;
+  fff = phi;
+  angles = agl;
+  radii = R;
+  masses = W_sec;
 end
 lambda = 500;             % Bregman penalty weight
 isLeastSquare = true;     % true if use a least square method to determine G0; false if use an average method to determine G0
@@ -52,11 +52,11 @@ isLeastSquare = true;     % true if use a least square method to determine G0; f
 waveVecs = cat(4,radii.*cos(angles),radii.*sin(angles));
 
 %% create a stencil (with three vectors since we only consider one half-plane) for the dual lattice
-stencil = zeros(3,2); % stencil in Fourier domain
+stencil = zeros(3,2);
 M = [cos(pi/3) sin(pi/3);-sin(pi/3) cos(pi/3)];
 stencil(1,1) = mean(radii(:));
 for i = 2:3
-    stencil(i,:) = stencil(i-1,:) * M;
+  stencil(i,:) = stencil(i-1,:) * M;
 end
 
 %% produce an initial guess for G (note: we need G^T stencil = waveVec)
@@ -70,30 +70,38 @@ if ~isLeastSquare
     G0(:,:,2,1) = -radius.*sin(angle);
 else
     G0 = zeros([size(radii(:,:,1)) 2 2]);
-    A = [stencil(1,1) 0 stencil(1,2) 0;0 stencil(1,1) 0 stencil(1,2); ...
-        stencil(2,1) 0 stencil(2,2) 0;0 stencil(2,1) 0 stencil(2,2); ...
-        stencil(3,1) 0 stencil(3,2) 0;0 stencil(3,1) 0 stencil(3,2)];
-    for k = 1:size(G0,1)
-        for l = 1:size(G0,2)
-            aux = A\[radii(k,l,1)*[cos(angles(k,l,1));sin(angles(k,l,1))]; ...
-                radii(k,l,2)*[cos(angles(k,l,2));sin(angles(k,l,2))]; ...
-                radii(k,l,3)*[cos(angles(k,l,3));sin(angles(k,l,3))]];
-            G0(k,l,:) = aux([1 3 2 4]);
-        end
+    %coeficients of the overdetermined linear system
+    if 0
+    A=[1 0 0 0;
+       0 0 1 0; 
+       1/2 sqrt(3)/2 0 0;
+       0 0 1/2 sqrt(3)/2;
+       -1/2 sqrt(3)/2 0 0;
+       0 0 -1/2 sqrt(3)/2]
+    A = A.'*A
     end
-    G0(:,:,1,2) = -G0(:,:,1,2); % flipping direction of y-coordinate
-    G0(:,:,2,1) = -G0(:,:,2,1);
+    G0(:,:,1) = (radii(:,:,1).*cos(angles(:,:,1))+0.5*radii(:,:, ...
+                                                      2).* ...
+                 cos(angles(:,:,2))-0.5*radii(:,:,3).*cos(angles(:, ...
+                                                      :,3)))/1.5 / ...
+        norm(stencil(1,:),2);
+    G0(:,:,2) = (sqrt(3)/2*(radii(:,:,2).*cos(angles(:,:,2))+ ...
+                            radii(:,:,3).*cos(angles(:,:,3))))/1.5 ...
+        / norm(stencil(1,:),2);
+    G0(:,:,3) = (radii(:,:,1).*sin(angles(:,:,1))+0.5*radii(:,:, ...
+                                                      2).*sin(angles(:,:,2))-0.5*radii(:,:,3).*sin(angles(:,:,3)))/1.5 / norm(stencil(1,:),2);
+    G0(:,:,4) = (sqrt(3)/2*(radii(:,:,2).*sin(angles(:,:,2))+radii(:,:,3).*sin(angles(:,:,3))))/1.5 / norm(stencil(1,:),2);
 end
 
 %% visualize initial guess
 if plotFIG
-    [G0,curlG0] = BregmanIter_FitL1Curl(waveVecs,masses,stencil,G0,weights,lambda,0,GPUflag);
-    visualize(fff,G0,curlG0,masses,0.15);
+  [G0,curlG0] = BregmanIter_FitL1Curl(waveVecs,masses,stencil,G0,weights,lambda,0,GPUflag);
+  visualize(fff,G0,curlG0,masses,0.15);
 end
-
+  
 %% identify the local crystal deformation
 if GPUflag
-    gpuDevice(1);
+  gpuDevice(1);
 end
 tic;
 [G1,curlG1] = BregmanIter_FitL1Curl(waveVecs,masses,stencil,G0,weights,lambda,numIter1,GPUflag);
@@ -114,17 +122,18 @@ if ~isLeastSquare
     G0(:,:,1,2) =  radius.*sin(angle);
     G0(:,:,2,1) = -radius.*sin(angle);
 else
-    G0 = zeros([size(radii(:,:,1)) 2 2]);
-    for k = 1:size(G0,1)
-        for l = 1:size(G0,2)
-            aux = A\[radii(k,l,1)*[cos(angles(k,l,1));sin(angles(k,l,1))]; ...
-                radii(k,l,2)*[cos(angles(k,l,2));sin(angles(k,l,2))]; ...
-                radii(k,l,3)*[cos(angles(k,l,3));sin(angles(k,l,3))]];
-            G0(k,l,:) = aux([1 3 2 4]);
-        end
-    end
-    G0(:,:,1,2) = -G0(:,:,1,2); % flipping direction of y-coordinate
-    G0(:,:,2,1) = -G0(:,:,2,1);
+    G0(:,:,1) = (radii(:,:,1).*cos(angles(:,:,1))+0.5*radii(:,:,2).* ...
+                 cos(angles(:,:,2))-0.5*radii(:,:,3).*cos(angles(:,:,3)))/1.5  / ...
+        norm(stencil(1,:),2);
+    G0(:,:,2) = (sqrt(3)/2*(radii(:,:,2).*cos(angles(:,:,2))+ ...
+                            radii(:,:,3).*cos(angles(:,:,3))))/1.5 ...
+        / norm(stencil(1,:),2);
+    G0(:,:,3) = (radii(:,:,1).*sin(angles(:,:,1))+0.5*radii(:,:,2).* ...
+                 sin(angles(:,:,2))-0.5*radii(:,:,3).*sin(angles(:,:,3)))/1.5  / ...
+        norm(stencil(1,:),2);
+    G0(:,:,4) = (sqrt(3)/2*(radii(:,:,2).*sin(angles(:,:,2))+ ...
+                            radii(:,:,3).*sin(angles(:,:,3))))/1.5 ...
+        / norm(stencil(1,:),2);
 end
 tic;
 [G2,curlG2] = BregmanIter_FitL1Curl(waveVecs2,masses,stencil,G0,weights,lambda,numIter1,GPUflag);
@@ -146,14 +155,14 @@ waveVecs(repmat(diffRegion,[1 1 3 2])) = waveVecs2(repmat(diffRegion,[1 1 3 2]))
 % set rotation values at the boundaries of diffRegion
 R = getRFromFinv(G3,6);
 if 1
-    tic;
-    [G,curlG] = BregmanIter_FitL1Curl_PointGroup(waveVecs,masses,stencil,R,G3,weights,lambda,numIter2,GPUflag);
-    toc
+tic;
+[G,curlG] = BregmanIter_FitL1Curl_PointGroup(waveVecs,masses,stencil,R,G3,weights,lambda,numIter2,GPUflag);
+toc
 end
 
 %% visualize the result
 if plotFIG
-    %visualize(fff,G1,curlG1,masses,0.15);
-    %visualize(fff,G2,curlG2,masses,0.15);
-    visualize(fff,G,curlG,masses,0.05);
+  %visualize(fff,G1,curlG1,masses,0.15);
+  %visualize(fff,G2,curlG2,masses,0.15);
+  visualize(fff,G,curlG,masses,0.05);
 end

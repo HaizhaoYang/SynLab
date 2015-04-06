@@ -1,27 +1,30 @@
-%% the code reads in the result from the synchrosqueezed wave packet transform applied to an image of a hexagonal crystal
+% This code uses the 2D synchrosqueezed transform to analyze an image of a
+% hexagonal crystal. It implements two algorithms in the paper
+% "Crystal image analysis via 2D synchrosqueezed transforms".
+%
+% Algorithm 1 is a fast algorithm to detect grain boundary and estimate grain orientation.
+% Algorithm 2 estimate crystal deformation.
+%
+% This code provides numerical results for the paper "Robustness analysis
+% of synchrosqueezed transforms".
 %
 % By Haizhao Yang
 
-%% -------------------------------------------------------------------------
-% Inputs:
-% example       integer from 1 to 8
-%
-% Outputs:
-% phi           original image
-% G             optimized gradient field
-% curlG         curl of G
-% G0            initial gradient field provided by SST
-% binaryIndex   fine defect regions with indices identifying connected
-%               components
-
-% mex LocBin.c;
-% mex LocWeight.c;
-% mex SS_polar.c;
 close all;
-is_Bin = 0;
-is_ns = 1;
 address = sprintf('results/Noise');
-NM = 0.5;%-11.25 1.4; -2.35 0.5
+algorithm = 1;
+noiseLevel = 1;
+switch noiseLevel
+    case 1
+        NM = 0; %SNR = -inf
+    case 2
+        NM = 0.5; %SNR = -2.35
+    case 3
+        NM = 1.4; %SNR = -11.25
+end
+if NM < 0
+    error('NM is nonnegative!');
+end
 %% -------------------------------------------------------------------------
 % Generate data and choose parameters
 %
@@ -66,36 +69,42 @@ switch example
     case 1 % use high subsampleRate or small red
         close all;
         load 'data/GB1.mat';
-        if is_ns
+        if algorithm == 1
+            parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
+                'epsFreqBand',1e-2,'numWave',3, ...
+                'numGridPerSector',30,'red',2,'rad',2, ...
+                's_sc',0.75,'t_sc',1,'epsSST',0.01,'algorithm',algorithm);
+            subsampleRate = 4;
+        else
             if NM>1
                 parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
                     'epsFreqBand',1e-2,'numWave',3, ...
-                    'numGridPerSector',30,'red',8,'rad',2, ...
-                    's_sc',0.6,'t_sc',0.6,'epsSST',0.15,'is_Bin',is_Bin);
+                    'numGridPerSector',30,'red',10,'rad',2, ...
+                    's_sc',0.6,'t_sc',0.6,'epsSST',0.15,'algorithm',algorithm);
                 subsampleRate = 4;
             else if NM>0.5
                     parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
                         'epsFreqBand',1e-2,'numWave',3, ...
                         'numGridPerSector',30,'red',10,'rad',2, ...
-                        's_sc',0.625,'t_sc',0.625,'epsSST',0.15,'is_Bin',is_Bin);
-                    subsampleRate = 4;% NM <= 1
-                else
-                    parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
-                        'epsFreqBand',1e-2,'numWave',3, ...
-                        'numGridPerSector',30,'red',10,'rad',2, ...
-                        's_sc',0.625,'t_sc',0.625,'epsSST',0.15,'is_Bin',is_Bin);
-                    subsampleRate = 4;% NM <= 1
+                        's_sc',0.625,'t_sc',0.625,'epsSST',0.15,'algorithm',algorithm);
+                    subsampleRate = 4;
+                else if NM > 0
+                        parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
+                            'epsFreqBand',1e-2,'numWave',3, ...
+                            'numGridPerSector',30,'red',10,'rad',2, ...
+                            's_sc',0.625,'t_sc',0.625,'epsSST',0.15,'algorithm',algorithm);
+                        subsampleRate = 4;
+                    else
+                        parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
+                            'epsFreqBand',1e-2,'numWave',3, ...
+                            'numGridPerSector',30,'red',4,'rad',2, ...
+                            's_sc',0.8,'t_sc',0.8,'epsSST',0.1,'algorithm',algorithm);
+                        subsampleRate = 4;
+                    end
                 end
             end
-        else
-            parameters = struct('extendRatio',0.0,'threRatio',0.1, ...
-                'epsFreqBand',1e-2,'numWave',3, ...
-                'numGridPerSector',30,'red',4,'rad',2, ...
-                's_sc',0.8,'t_sc',0.8,'epsSST',0.1,'is_Bin',is_Bin);
-            subsampleRate = 2;
         end
-        
-        if ~is_ns
+        if NM == 0
             energyThre = 2.3;%clean
         else
             energyThre = 2;%noisy
@@ -108,71 +117,68 @@ end
 fff = phi;
 fff = fff/max(abs(fff(:)));
 fff = fff - mean(fff(:));
-if is_ns
-    [Nx,Ny] = size(fff);
-    ns = real(NM*(randn(Nx,Ny)+i*randn(Nx,Ny)));
-    snr = 10*log10((var(fff(:)))/var(ns(:)))
-    fff = fff + ns;
-end
+
+[Nx,Ny] = size(fff);
+ns = real(NM*(randn(Nx,Ny)+i*randn(Nx,Ny)));
+snr = 10*log10((var(fff(:)))/var(ns(:)))
+fff = fff + ns;
 
 %% -------------------------------------------------------------------------
 % The synchrosqueezed wave packet transform provids an initial guess
 tic;
 plotFIG = false;
-[radii angles TTEng_1st TTEng_2nd masses] = initialGuess(fff,subsampleRate,plotFIG,parameters); % assumes y-coordinate pointing into direction of growing first index
-BD = findGB(TTEng_1st,TTEng_2nd);
-
-% bring wave vectors into order according to angle
-[angles,perm] = sort(angles,3);
-for k = 1:size(perm,1)
-    for l = 1:size(perm,2)
-        radii(k,l,:) = radii(k,l,perm(k,l,:));
+[radii angles TTEng_1st TTEng_2nd masses] = initialGuessSST(fff,subsampleRate,plotFIG,parameters); % assumes y-coordinate pointing into direction of growing first index
+BD = findGB(TTEng_1st,TTEng_2nd,algorithm);
+toc
+if algorithm == 2
+    tic;
+    % bring wave vectors into order according to angle
+    [angles,perm] = sort(angles,3);
+    for k = 1:size(perm,1)
+        for l = 1:size(perm,2)
+            radii(k,l,:) = radii(k,l,perm(k,l,:));
+        end
     end
+    
+    v = smoothImage( sum(masses,3), 10, 2 );
+    pos = find(v>energyThre);
+    N = size(BD,1);
+    binaryIndex = zeros(N,N);
+    binaryIndex(pos) = 1;
+    
+    % find deformation gradient, assuming y-coordinate pointing into direction of decreasing 1st index, and using two different point group interpretations
+    G = initGFromSSPeaksSST( angles, radii, pi/3*[0;1;2], median(radii(:))*ones(3,1) );
+    toc
 end
-
-v = smoothImage( sum(masses,3), 10, 2 );
-pos = find(v>energyThre);
-N = size(BD,1);
-binaryIndex = zeros(N,N);
-binaryIndex(pos) = 1;
-
-% find initial noisy deformation gradient, assuming y-coordinate pointing into direction of decreasing 1st index, and using two different point group interpretations
-G = initGFromSSPeaks( angles, radii, pi/3*[0;1;2], median(radii(:))*ones(3,1) );
-
 %% -------------------------------------------------------------------------
 % show results
-for ii = 1:2
+% deformation gradient
+if algorithm == 1
     pic = figure;
-    imagesc([0,1],[0,1],G(:,:,1,ii)); axis image;axis xy;
-    %freezeColors;
-%     colorbar;%cbfreeze(colorbar);
-%     name = sprintf('%sG1%d_Ex%d.fig',address,ii,example);
-%     saveas(pic,name);
-end
-for ii = 1:2
+    imagesc([0,1],[0,1],angles); axis image;axis xy;title('Grain Orientation');
+else
+    for ii = 1:2
+        pic = figure;
+        imagesc([0,1],[0,1],G(:,:,1,ii)); axis image;axis xy;
+    end
+    for ii = 1:2
+        pic = figure;
+        imagesc([0,1],[0,1],G(:,:,2,ii)); axis image;axis xy;
+        colorbar;
+    end
+    
+    % volume distortion
     pic = figure;
-    imagesc([0,1],[0,1],G(:,:,2,ii)); axis image;axis xy;
-    %freezeColors;
-    colorbar;%cbfreeze(colorbar);
-%     name = sprintf('%sG2%d_Ex%d.fig',address,ii,example);
-%     saveas(pic,name);
+    vol = G(:,:,1).*G(:,:,4)-G(:,:,2).*G(:,:,3);
+    imagesc([0,1],[0,1],vol-1); axis image;  h=colorbar; caxis([-disVolThre disVolThre]);axis xy;
+    colorbar;
+    title('Distortion Volume');
 end
-
-
-% volume distortion
-pic = figure;
-vol = G(:,:,1).*G(:,:,4)-G(:,:,2).*G(:,:,3);
-imagesc([0,1],[0,1],vol-1); axis image;  h=colorbar; caxis([-disVolThre disVolThre]);axis xy;
-colorbar;
-title('Distortion Volume');
-% name = sprintf('%sVol_Ex%d.fig',address,example);
-% saveas(pic,name);
 
 mv = -92;
 mv2 = 500;
 % input image
 pic = figure; hold on;
-%1024-(93:156)-mv
 imagesc([0,1],[0,1],fff);
 imagesc([0,0.4],[0,0.4],real(fff(1024-163:1024-100,1:64)));
 colorbar;
@@ -180,8 +186,6 @@ rectangle('Position',[(93+mv)/1024,861/1024,(256-193+1)/1024,(256-193+1)/1024]);
 rectangle('Position',[0,0,0.4,0.4]);
 hold off;
 axis image;axis xy;
-% name = sprintf('%sImg_Ex%d.fig',address,example);
-% saveas(pic,name);
 
 % grain boundary
 [m n] = size(fff);
@@ -197,5 +201,3 @@ r = rectangle('Position',[0,0,0.4,0.4]);
 set(r,'edgecolor','k')
 hold off;
 axis image;axis xy;
-% name = sprintf('%sBD_Ex%d.fig',address,example);
-% saveas(pic,name);

@@ -49,9 +49,16 @@ tempPath = [tempPath front 'Applications' back 'CanvasAnalysis' back 'demo' back
 tempPath = [tempPath front 'Applications' back 'CanvasAnalysis' back 'src' back];
 
 tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back];
-tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'demo' back];
-tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'src' back];
 tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'data' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'SSTmethod' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'SSTmethod' back 'demo' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'SSTmethod' back 'src' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back 'demo' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back 'src' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back 'src' back 'srcOptPart' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back 'src' back 'srcOther' back];
+tempPath = [tempPath front 'Applications' back 'CrystalAnalysis' back 'VarSSTmethod' back 'src' back 'srcSST' back];
 
 tempPath = [tempPath front 'Applications' back 'DemoRobustness' back];
 tempPath = [tempPath front 'Applications' back 'DemoRobustness' back 'data' back];
@@ -78,10 +85,15 @@ rootDir = pwd;
 cd(['Source' CSPT 'SS_CT_2D' CSPT 'src' CSPT]);
 mex SS_polar.c;
 mex SS_polar_v2.c;
+mex SS_polar_v1.c;
 cd(rootDir);
-cd(['Applications' CSPT 'CrystalAnalysis' CSPT 'src' CSPT]);
-mex LocBin.c;
+cd(['Applications' CSPT 'CrystalAnalysis' CSPT 'SSTmethod' CSPT 'src' CSPT]);
 mex LocWeight.c;
+mex LocSmooth.c;
+cd(rootDir);
+cd(['Applications' CSPT 'CrystalAnalysis' CSPT 'VarSSTmethod' CSPT 'src' CSPT 'srcSST' CSPT]);
+mex LocWeight.c;
+mex LocWeight_v2.c;
 cd(rootDir);
 cd(['Applications' CSPT 'CanvasAnalysis' CSPT 'src' CSPT]);
 mex LocWavVec_v2.c;

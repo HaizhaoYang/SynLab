@@ -12,7 +12,7 @@ x = 0:1/N:(1-1/N);
 x = xo + 0.01*sin(4*pi*xo);
 y = yo + 0.01*sin(4*pi*yo);
 X = real(exp(2*pi*i*70*x)+exp(2*pi*i*70*y));
-save 'synthetic.mat' X;
+save 'results/synthetic.mat' X;
 
 
 % Analyze data

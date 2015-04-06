@@ -22,10 +22,7 @@ int findmax2(double *A, int st, int L) {
 }
 
 
-/*This function computes the local wave vectors via weighted average.
- 
- By Haizhao Yang and Jianfeng Lu
- */
+/*This function computes the agl in num_wave directions*/
 void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                  int nrhs, const mxArray *prhs[]) /* Input variables */
 {
@@ -37,6 +34,8 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
 #define ss_energy(ci,di,ai,bi) ss_energy[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
 #define ss_avgdx(ci,di,ai,bi) ss_avgdx[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
 #define ss_avgdy(ci,di,ai,bi) ss_avgdy[ci+Nss[0]*(di+Nss[1]*(ai+Nss[2]*bi))]
+    /* #define agl2(ai,bi,j) agl2[ai+dims[0]*(bi+dims[1]*j)]
+     #define R2(ai,bi,j) R2[ai+dims[0]*(bi+dims[1]*j)] */
 #define pi 3.141592653589793
     
     size_t ai, bi, ci, di, k, j, cnt, cnt2;
@@ -50,7 +49,7 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
     num_wave = mxGetScalar(prhs[3]);
     nrhs = 4;
     
-    nlhs = 5;
+    nlhs = 7;
     int ndim = 3, dims[3] = {Nss[2],Nss[3],num_wave}, numm = (int)Nss[1]/num_wave/8, numm_R = (int)floor(Nss[0]/4);
     plhs[0] = mxCreateNumericArray(ndim,dims,mxDOUBLE_CLASS,mxREAL);
     plhs[1] = mxCreateNumericArray(ndim,dims,mxDOUBLE_CLASS,mxREAL);
@@ -88,7 +87,7 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
             moveStep = floor(L/4);
             /*maxpos = fmod(findmax(temp2,Nss[1]),L);*/
             maxpos = findmax(temp2,Nss[1]);
-            markPos = fmod(floor(maxpos/L),num_wave);
+            markPos = floor(maxpos/L);
             maxpos = maxpos - markPos*L;
             moveStep = floor(maxpos-L/2);
             if (moveStep>=0) {

@@ -1,4 +1,4 @@
-function [R agl TTEng_1st TTEng_2nd W_sec] = initialGuess(fff,subsampleRate,plotFIG,parameters)
+function [R agl TTEng_1st TTEng_2nd W_sec] = initialGuessSST(fff,subsampleRate,plotFIG,parameters)
 %function [R agl TTEng_1st TTEng_2nd W_sec ss_energy] = initialGuess(fff,subsampleRate,plotFIG,parameters)
 % This code uses ss curvelet transforms to detect different oscillation directions.
 %% Main steps:
@@ -121,18 +121,21 @@ epsl = parameters.epsSST;
 is_real = 0;
 t_sc = parameters.t_sc;
 s_sc = parameters.s_sc;
-is_Bin = parameters.is_Bin;
+algorithm = parameters.algorithm;
 num_direction = 1;
-dm = 0; dn = 0;
 %----------------------------------------------------------------------
-%ss transform
-[ss_energy ss_avgdx ss_avgdy] = SS_ct2_polar(num_direction,fff,SPg,NB,rad,is_real,R_low,R_high,epsl,red,t_sc, s_sc);
-
-%----------------------------------------------------------------------
-%bump detection
-if is_Bin
-    [agl R TTEng_1st TTEng_2nd W_sec] = LocBin(ss_energy,num_wave);
+%SST and bump detection
+if algorithm == 1
+    ss_energy = SS_ct2_polar_v1(num_direction,fff,SPg,NB,rad,is_real,R_low,R_high,epsl,red,t_sc, s_sc);
+    [agl TTEng_1st TTEng_2nd] = LocSmooth(sum(ss_energy),num_wave);
+    R = [];
+    W_sec = [];
+    agl = agl*pi/NB(2);%the number of grid point in the angle direction cannot be too large
+    ori = agl*180/pi;
+    myfilter=fspecial('gaussian',[3 3],0.5);
+    agl = imfilter(ori, myfilter, 'replicate');
 else
+    [ss_energy ss_avgdx ss_avgdy] = SS_ct2_polar(num_direction,fff,SPg,NB,rad,is_real,R_low,R_high,epsl,red,t_sc, s_sc);
     [agl R TTEng_1st TTEng_2nd W_sec] = LocWeight(ss_energy,ss_avgdx,ss_avgdy,num_wave);
 end
 clear ss_energy ss_avgdx ss_avgdy;
