@@ -8,7 +8,7 @@
 % By Haizhao Yang
 
 % Clean data
-fastAnalysis('F205',1,0.8,1e-4,1,[8,5],15,90,2,4,4);
+%fastAnalysis('F205',1,0.8,1e-4,1,[8,5],15,90,2,4,4);
 
 % Noisy data
 %fastAnalysis('F659',0.8,0.625,1e-4,1,[8,5],15,90,2,4,4);

@@ -1,9 +1,0 @@
-This package contains basic routines developed in [1][2] for atomic crystal images using 2D synchrosqueezed transforms [3][4].
-
-[1] H. Yang, J. Lu, and L. Ying. Crystal image analysis using 2d synchrosqueezed transforms. arXiv:1402.1262 [math.NA], Submitted on 6 Feb 2014.
-[2] J. Lu, B. Wirth and H. Yang. Compbining 2d synchrosqueezed wave packet transforms with optimization for crystal image analysis. arXiv:1501.06254 [cond-mat.mtrl-sci], Submitted on 26 Jan 2015.[3] H. Yang and L. Ying. Synchrosqueezed wave packet transform for 2d mode decompo- sition. SIAM Journal on Imaging Sciences, 6(4):1979–2009, 2013.[4] H. Yang and L. Ying. Synchrosqueezed curvelet transform for two-dimensional mode decomposition. SIAM Journal on Mathematical Analysis, 46(3):2052–2083, 2014.
-
-Contact information
-Jianfeng Lu at jianfeng@math.duke.edu
-Benedikt Wirth at Benedikt.Wirth@uni-muenster.de
-Haizhao Yang at haizhao@stanford.edu
