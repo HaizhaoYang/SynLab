@@ -14,7 +14,7 @@ close all;
 % By Haizhao Yang
 
 %%
-for dif = 1:-0.1:0
+for dif = 0.5:-0.1:0
     %set up data
     N = 8192;
     x = [0:N-1]/N;

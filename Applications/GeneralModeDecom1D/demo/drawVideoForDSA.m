@@ -12,19 +12,21 @@ close all;
 % Smaller 'dif' or 'FF' violates the 'well-difference' condition and the
 % DSA method fails.
 %
+% Use this example to generate a video to illustrate the idea of DSA.
+%
 % By Haizhao Yang
 
 %%
-for dif = 0.5:-0.05:0 %dif smaller, instantaneous frequencies more similar
+for dif = 0.5
     %set up data
     N = 2^11;
     x = [0:N-1]/N;
     fff = zeros(1,N);
     amp = 0.05;
-    is_plot = 0;
+    is_plot = 1;
     
     num_group = 2;
-    FF = 100;%50;
+    FF = 50;
     ins_freq = zeros(num_group,N);
     ins_amplt = zeros(num_group,N);
     ins_pre_phase = zeros(num_group,N);
@@ -33,13 +35,13 @@ for dif = 0.5:-0.05:0 %dif smaller, instantaneous frequencies more similar
     ins_freq(1,:) = (1+amp*2*pi*cos(2*pi*x))*FF;
     f1 = zeros(1,N);
     am = 1+0.05*sin(4*pi*x);
-    f1 = am.*gen_shape(FF*xx,1);
+    f1 = am.*gen_shape2(FF*xx,2);
     
     yy = x +dif + amp*sin(2*pi*(x+dif));
     ins_freq(2,:) = (1+amp*2*pi*cos(2*pi*(x+dif)))*FF;
     f2 = zeros(1,N);
     bm = 1+0.1*sin(2*pi*x);
-    f2 = bm.*gen_shape(FF*yy,2);
+    f2 = bm.*gen_shape2(FF*yy,3);
     
     NM = 0;
     ns = NM*randn(1,N);
@@ -55,7 +57,7 @@ for dif = 0.5:-0.05:0 %dif smaller, instantaneous frequencies more similar
     %use smooth diffeomorphism and FFT to estimate spectrum of each general wave shape
     %set up parameters
     tol = 1e-9;
-    numPeaks = 30;
+    numPeaks = 50;
     
     signal_diff = zeros(num_group,N);
     spec_signal_diff = zeros(num_group,N);
@@ -71,6 +73,7 @@ for dif = 0.5:-0.05:0 %dif smaller, instantaneous frequencies more similar
         subplot(2,2,1); subplot(2,2,2);
         subplot(2,2,3);plot(f1(1:300),'r');title('First mode');
         subplot(2,2,4);plot(f2(1:300),'r');title('Second mode');
+        M = moviein(numPeaks,pic);
     end
     while norm(resid)>norm(fff)*tol & count < numPeaks
         count = count + 1;
@@ -117,13 +120,21 @@ for dif = 0.5:-0.05:0 %dif smaller, instantaneous frequencies more similar
                 subplot(2,2,4);plot(f2(1:300),'r');hold on;title('Second mode');
             end
             plot(general_shape_comp(max_pos2,1:300),'b');hold off;
-            pause(0.25);
+            M(count) = getframe(pic);
         end
     end
     if is_plot
-        figure;
+        %movie(M);
+        [h, w, p] = size(M(1).cdata);  % use 1st frame to get dimensions
+        hf = figure;
+        % resize figure based on frame's w x h, and place at (150, 150)
+        set(hf, 'position', [150 150 w h]);
+        axis off
+        movie(hf,M,1,4);
+        movie2avi(M, 'results/DSA.avi', 'compression', 'None');
+        implay('DSA.avi',4);
     end
-    
+
     %estimate spectrum from dist
     if 0
         for cnt = 1:num_group
