@@ -40,13 +40,6 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
     nrhs = 13;
     
     nlhs = 0;
-    /*   int ndim = 4, dims[4] = {NB1,NB2,Nss[0],Nss[1]};
-     plhs[0] = mxCreateNumericArray(ndim,dims,mxDOUBLE_CLASS,mxREAL);
-     kb = mxGetPr(plhs[0]);
-     plhs[1] = mxCreateNumericArray(ndim,dims,mxDOUBLE_CLASS,mxREAL);
-     avgdx = mxGetPr(plhs[1]);
-     plhs[2] = mxCreateNumericArray(ndim,dims,mxDOUBLE_CLASS,mxREAL);
-     avgdy = mxGetPr(plhs[2]);*/
     
     for (ai=0;ai<Nss[0];ai++) {
         for (bi=0;bi<Nss[1];bi++) {
@@ -61,33 +54,9 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                 loc2 = round(agl/da);
                 
                 temp_energy = ccr(ai,bi)*ccr(ai,bi) + cci(ai,bi)*cci(ai,bi);
-                if (loc2==0){
-                    if (kk1(ai,bi)>=0) {
-                        kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
-                        avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
-                        avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
-                    }
-                    else{
-                        kb(loc1,NB2-1,ai,bi) = kb(loc1,NB2-1,ai,bi) + temp_energy;
-                        avgdx(loc1,NB2-1,ai,bi) = avgdx(loc1,NB2-1,ai,bi) - r * cos(agl) * temp_energy;
-                        avgdy(loc1,NB2-1,ai,bi) = avgdy(loc1,NB2-1,ai,bi) + r * sin(agl) * temp_energy;
-                    }
-                }else if (loc2==NB2-1){
-                    if (kk1(ai,bi)>=0) {
-                        kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
-                        avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
-                        avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
-                    }
-                    else{
-                        avgdx(loc1,0,ai,bi) = avgdx(loc1,0,ai,bi) - r * cos(agl) * temp_energy;
-                        kb(loc1,0,ai,bi) = kb(loc1,0,ai,bi) + temp_energy;
-                        avgdy(loc1,0,ai,bi) = avgdy(loc1,0,ai,bi) + r * sin(agl) * temp_energy;
-                    }
-                }else{
-                    kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
-                    avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
-                    avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
-                }
+                kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
+                avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
+                avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
                 /* cannot use kk since those are symmetric */
             }
         }

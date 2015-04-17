@@ -56,7 +56,7 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                     loc2 = round(agl/da);
                     
                     temp_energy = ccr(ai,bi,ci)*ccr(ai,bi,ci) + cci(ai,bi,ci)*cci(ai,bi,ci);
-                    if (1){
+                    if (0){
                         if (loc2==0){
                             if (kk1(ai,bi,ci)>=0) {
                                 kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
@@ -88,7 +88,8 @@ void mexFunction(int nlhs, mxArray *plhs[], /* Output variables */
                     else{
                         kb(loc1,loc2,ai,bi) = kb(loc1,loc2,ai,bi) + temp_energy;
                         avgdx(loc1,loc2,ai,bi) = avgdx(loc1,loc2,ai,bi) + r * cos(agl) * temp_energy;
-                        avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy; /* cannot use kk since those are symmetric */
+                        avgdy(loc1,loc2,ai,bi) = avgdy(loc1,loc2,ai,bi) + r * sin(agl) * temp_energy;
+                        /* cannot use kk since those are symmetric */
                     }
                 }
             }

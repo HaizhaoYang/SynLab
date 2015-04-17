@@ -91,15 +91,19 @@ if R_low == 0
         level{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
         if cnt == 1
             temp = floor(wedge_end(cnt))+1;
-            st = (-temp+2+(N-mod(N,2))/2);
-            ed = (temp-1+(N+2-mod(N,2))/2);
+            %st = (-temp+2+(N-mod(N,2))/2);
+            %ed = (temp-1+(N+2-mod(N,2))/2);
+            st = (-temp+1+(N-mod(N,2))/2);
+            ed = (temp-2+(N+2-mod(N,2))/2);
             pos = st:ed;%find(temp<=wedge_end(cnt));
         else %if cnt<nbscales-1
             stOld = st;
             edOld = ed;
             temp = floor(wedge_end(cnt))+1;
-            st = max((-temp+2+(N-mod(N,2))/2),1);
-            ed = min((temp-1+(N+2-mod(N,2))/2),N);
+            %st = max((-temp+2+(N-mod(N,2))/2),1);
+            %ed = min((temp-1+(N+2-mod(N,2))/2),N);
+            st = max((-temp+1+(N-mod(N,2))/2),1);
+            ed = min((temp-2+(N+2-mod(N,2))/2),N);
             pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
         end
         level{cnt}.polar_r = Pos_radius(pos);
@@ -248,15 +252,17 @@ else
         level{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
         if cnt == 1
             temp = floor(wedge_end(cnt))+1;
-            st = (-temp+2+(N-mod(N,2))/2);
-            ed = (temp-1+(N+2-mod(N,2))/2);
+            st = (-temp+1+(N-mod(N,2))/2);
+            ed = (temp-2+(N+2-mod(N,2))/2);
             pos = st:ed;%find(temp<=wedge_end(cnt));
         else %if cnt<nbscales-1
             stOld = st;
             edOld = ed;
             temp = floor(wedge_end(cnt))+1;
-            st = max((-temp+2+(N-mod(N,2))/2),1);
-            ed = min((temp-1+(N+2-mod(N,2))/2),N);
+            %st = max((-temp+2+(N-mod(N,2))/2),1);
+            %ed = min((temp-1+(N+2-mod(N,2))/2),N);
+            st = max((-temp+1+(N-mod(N,2))/2),1);
+            ed = min((temp-2+(N+2-mod(N,2))/2),N);
             pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
         end
         level{cnt}.polar_r = Pos_radius(pos);

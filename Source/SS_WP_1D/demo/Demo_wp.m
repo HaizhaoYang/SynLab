@@ -41,7 +41,7 @@ if (1)
     end
     rad = 1.5;
     is_cos = 1;
-    t_sc = 1/2+1/8;
+    t_sc = 1/2+2/8;
     epsl = 1e-2;
     xo = x;
     red = 1;

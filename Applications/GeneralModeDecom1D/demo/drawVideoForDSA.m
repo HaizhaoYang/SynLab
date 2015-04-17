@@ -71,8 +71,8 @@ for dif = 0.5
     if is_plot
         pic = figure('position',[100 100 850 600]);
         subplot(2,2,1); subplot(2,2,2);
-        subplot(2,2,3);plot(f1(1:300),'r');title('First mode');
-        subplot(2,2,4);plot(f2(1:300),'r');title('Second mode');
+        subplot(2,2,3);plot(f1(1:150),'r');title('First mode');
+        subplot(2,2,4);plot(f2(1:150),'r');title('Second mode');
         M = moviein(numPeaks,pic);
     end
     while norm(resid)>norm(fff)*tol & count < numPeaks
@@ -115,11 +115,11 @@ for dif = 0.5
         resid = resid - comp;
         if is_plot
             if max_pos2 ==1
-                subplot(2,2,3);plot(f1(1:300),'r');hold on;title('First mode');
+                subplot(2,2,3);plot(f1(1:150),'r');hold on;title('First mode');axis([0 150 -2 5]);
             else
-                subplot(2,2,4);plot(f2(1:300),'r');hold on;title('Second mode');
+                subplot(2,2,4);plot(f2(1:150),'r');hold on;title('Second mode');axis([0 150 -6 3]);
             end
-            plot(general_shape_comp(max_pos2,1:300),'b');hold off;
+            plot(general_shape_comp(max_pos2,1:150),'b');hold off;
             M(count) = getframe(pic);
         end
     end
@@ -130,9 +130,9 @@ for dif = 0.5
         % resize figure based on frame's w x h, and place at (150, 150)
         set(hf, 'position', [150 150 w h]);
         axis off
-        movie(hf,M,1,4);
-        movie2avi(M, 'results/DSA.avi', 'compression', 'None');
-        implay('DSA.avi',4);
+        movie(hf,M,1,1);
+        movie2avi(M, 'results/DSA.avi', 'compression', 'None','fps',2);
+        implay('DSA.avi',2);
     end
 
     %estimate spectrum from dist
@@ -149,7 +149,7 @@ for dif = 0.5
     
     % show results
     figure; subplot(2,2,1);hold on; plot(x,ins_freq(1,:),'r');plot(x,ins_freq(2,:),'b');title('Instantaneous frequencies');hold off;
-    subplot(2,2,2); plot(x(1:2000),f1(1:2000)+f2(1:2000));set(gca,'DataAspectRatio',[1 180 1]);xlabel('Time (Second)');title('A superposition of components');
+    subplot(2,2,2); plot(x(1:1500),f1(1:1500)+f2(1:1500));set(gca,'DataAspectRatio',[1 180 1]);xlabel('Time (Second)');title('A superposition of components');
     
     [val pos] = max(err1);
     posVec = pos-100:pos+100;

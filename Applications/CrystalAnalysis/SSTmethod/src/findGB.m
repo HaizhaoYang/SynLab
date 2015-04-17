@@ -1,6 +1,8 @@
 function BD = findGB(TTEng_1st,TTEng_2nd,algorithm)
+% Find grain boundary using spectral energy peaks
+
 if algorithm == 1
-    BD = 1./(TTEng_1st-TTEng_2nd+1);
+    BD = 1./sqrt(TTEng_1st-TTEng_2nd+1);
 else
     [N1,N2,num_wave] = size(TTEng_1st);
     temp = zeros(N1,N2);
