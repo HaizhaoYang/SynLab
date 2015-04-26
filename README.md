@@ -31,6 +31,7 @@ SynLab is a collection of Matlab and MEX routines which implements 1D and 2D syn
 [5] H. Yang and L. Ying. Robustness Analysis of Synchrosqueezed Transforms. Preprint.
 
 [6] H. Yang, J. Lu, W. P. Brown, I. Daubechies, and L. Ying, Quantitative Canvas Weave Analysis Using 2D Synchrosqueezed Transforms. IEEE Signal Processing Magazine, Special Issue on Art Investigations, 2015. 
+
 [7] J. Lu, B. Wirth and H. Yang. Compbining 2d synchrosqueezed wave packet transforms with optimization for crystal image analysis. arXiv:1501.06254 [cond-mat.mtrl-sci], Submitted on 26 Jan 2015.
 
 3. INSTALLING SYNLAB
