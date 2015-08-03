@@ -54,4 +54,35 @@ if (1)
     %size(T_f)
 end
 
+if (1)
+    %synchrosqueezed wave packet transform
+    eps = 1e-2;
+    res = 1;
+    NG = N/16;
+    is_real = 1;
+    is_unif = 1;
+    typeNUFFT = 1;
+    R_high = N/8;
+    R_low = 0;
+    if is_real
+        freq_range = [R_low R_high];
+        fff = real(fff);
+    else
+        freq_range = [-R_high R_high];
+    end
+    rad = 1.5;
+    is_cos = 1;
+    t_sc = 1/2+2/8;
+    epsl = 1e-2;
+    xo = x;
+    red = 10;
+    
+    [T_f coef kk] = ss_wp1_fwd(fff,is_real,is_unif,typeNUFFT,NG,xo,R_high,R_low,rad,is_cos,t_sc,red,epsl,res);
+
+    figure;imagesc([0 1],freq_range,real(T_f));colorbar;title('synchrosqueezed energy distribution');axis square;
+    figure;imagesc(real(coef{1}));colorbar;title('wave packet transform');axis square;
+    %figure;imagesc(kk);colorbar;title('kk');
+    %size(T_f)
+end
+
 

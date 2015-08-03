@@ -1,4 +1,4 @@
-function [ss_energy coefCell coefTensor LocWavVecx LocWavVecy] = ss_ct2_fwd(img,SPg,R_low,R_high,NB,rad,is_real,is_unif,typeNUFFT,xo,yo,epsl,t_sc,s_sc,is_cos,wedge_length_coarse)
+function [ss_energy coefCell coefTensor LocWavVecx LocWavVecy] = ss_ct2_fwd(img,SPg,R_low,R_high,NB,rad,is_real,is_unif,typeNUFFT,xo,yo,epsl,t_sc,s_sc,red,is_cos,wedge_length_coarse)
 % ss_ct2_fwd.m - 2D Synchrosqueezed Curvelet Transform
 %
 % Inputs:
@@ -29,6 +29,8 @@ function [ss_energy coefCell coefTensor LocWavVecx LocWavVecy] = ss_ct2_fwd(img,
 %               [default set to 1-1/8]
 %   s_sc    scaling parameter for angle
 %               [default set to 1/2+1/8]
+%   red         a parameter for redundancy
+%               [ default set to 1]
 %   is_cos      Type of the window function
 %                   0: C^infinity window function
 %                   1: cosine window function
@@ -46,6 +48,8 @@ function [ss_energy coefCell coefTensor LocWavVecx LocWavVecy] = ss_ct2_fwd(img,
 %
 %by Haizhao Yang
 
+% TODO: insert non-uniform transform
+
 [Nx Ny] = size(img);
 N = max(Nx,Ny);
 if nargin < 2, SPg = round([Nx Ny]/8); end;
@@ -61,13 +65,12 @@ if nargin < 11, yo = repmat(0:1/Ny:(Ny-1)/Ny,Nx,1); end
 if nargin < 12, epsl = 1e-2; end;
 if nargin < 13, t_sc = 1 - 1/8; end;
 if nargin < 14, s_sc = 1/2 + 1/8; end;
-if nargin < 15, is_cos = 1; end;
-if nargin < 16, wedge_length_coarse = 8; end;
+if nargin < 15, red = 1; end;
+if nargin < 16, is_cos = 1; end;
+if nargin < 17, wedge_length_coarse = 8; end;
 
 R_low = 0;
-coefCell = gdct2_fwd(img,is_real,is_unif,xo,yo,typeNUFFT,SPg,R_high*sqrt(2),R_low,rad,is_cos, t_sc, s_sc, wedge_length_coarse);
-aaa = gdct2_ext_1(img,is_real,is_unif,xo,yo,typeNUFFT,SPg,R_high*sqrt(2),R_low,rad,is_cos, t_sc, s_sc, wedge_length_coarse);
-bbb = gdct2_ext_2(img,is_real,is_unif,xo,yo,typeNUFFT,SPg,R_high*sqrt(2),R_low,rad,is_cos, t_sc, s_sc, wedge_length_coarse);
+[coefCell aaa bbb] = gdct2_fwd_red(img,is_real,SPg,R_high*sqrt(2),R_low,rad,is_cos, t_sc, s_sc, red,wedge_length_coarse);
 
 ncl = numel(coefCell);
 [t1 t2] = size(coefCell{1}{1});

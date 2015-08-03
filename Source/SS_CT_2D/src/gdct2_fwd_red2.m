@@ -33,7 +33,8 @@ function [C C1 C2] = gdct_fwd_red2(x, is_real,sz,R_high,R_low,  rad,is_cos, t_sc
 %
 % Outputs
 %   C           Cell array of curvelet coefficients.
-%               C{j}{l}(k1,k2) is the coefficient at
+%               C{j}{l,i}(k1,k2) is the coefficient at
+%                   - frame i: integer, from 1 to red
 %                   - scale j: integer, from coarsest to finest scale,
 %                   - angle l: integer, starts on the right and
 %                   increases counter clockwise,

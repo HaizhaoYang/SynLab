@@ -38,7 +38,8 @@ function C = wp1_fwd(x, is_real, is_unif, typeNUFFT, xo ,NG, R_high, R_low,  rad
 %
 % Outputs
 %   C           Cell array of wave packet coefficients.
-%               C{j}{l}(k) is the coefficient at
+%               C{i}{j}{l}(k) is the coefficient at
+%                   - the i'th frame, i=1,...,red
 %                   - scale j: integer, from coarsest to finest scale,
 %                   - l = 1 or 2,
 %                   - position k: integers, size doesn't change
@@ -83,6 +84,7 @@ end
 R = (N-mod(N,2))/2;
 if nargin > 6, R = min(R_high,R); end;
 if nargin < 8, R_low = 0; end;
+if ~is_real, R_low = 0; end;
 if R_low <= wedge_length_coarse
     R_low = 0;
     display('R_low <= wedge_length_coarse, set R_low = 0.');
@@ -92,6 +94,7 @@ if R<=R_low, error('R_low is too large! R_low at most %f',R); end;
 if rad > 2, display('rad too large! rad is set up to be 1'); rad = 1; end;
 wedge_length_coarse = wedge_length_coarse*rad;
 wedge_length = cell(1,red);
+wedge_end = cell(1,red);
 da = rad*R^t_sc/2/red;
 for cntred = 1:red
     wedge_length{1,cntred} = 2;
@@ -199,7 +202,6 @@ if R_low == 0
         temp(x1) = level{cntred}{1}.X_val;
         x1 = mod(level{cntred}{2}.index,NG)+1;
         temp(x1) = (level{cntred}{2}.X_val).*(level{cntred}{2}.lowpass);
-        fac = 1;
         C{cntred}{1}{1} = fftshift(ifft(ifftshift(temp)))*sqrt(NG);
         for cnt =3:nbscales{cntred}
             if is_fac == 1

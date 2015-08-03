@@ -62,51 +62,58 @@ num_grid = ceil((fqscale(2)-fqscale(1))/h);
 h = (fqscale(2)-fqscale(1))/(num_grid-1);
 %grid = fqscale(1):h:fqscale(2);
 
-if is_real
-    [sk NG] = size(coef{1});
-    nclp = sk*2;
-else
-    [sk NG] = size(coef{1});
-    nclp = sk + 1;
+red = length(coef);
+ncl = cell(1,red);
+nclp = cell(1,red);
+for cntred = 1:red
+    if is_real
+        [sk NG] = size(coef{cntred});
+        nclp{cntred} = sk*2;
+    else
+        [sk NG] = size(coef{cntred});
+        nclp{cntred} = sk + 1;
+    end
+    ncl{cntred} = nclp{cntred}/2;
 end
-ncl = nclp/2;
 
 EXT = 10^10;
 num_mode = length(cluster);
 mode = zeros(num_mode,N);
 amplt = zeros(num_mode,N);
 for cnt_mode = 1:num_mode
-    cc = zeros(sk,NG);
-    for b = 1:NG
-        tk = kk{1}(:,b);
-        gud = find(tk<EXT);
-        tk = tk(gud);
-        pos = round((tk-fqscale(1))/h)+1;
-        for cnt_pos = 1:length(pos)
-            if find(cluster{cnt_mode}==pos(cnt_pos)+(b-1)*NG)
-                cc(gud(cnt_pos),b) = coef{1}(gud(cnt_pos),b);
+    ccc = cell(1,red);
+    for cntred = 1:red
+        cc = zeros(sk,NG);
+        for b = 1:NG
+            tk = kk{cntred}(:,b);
+            gud = find(tk<EXT);
+            tk = tk(gud);
+            pos = round((tk-fqscale(1))/h)+1;
+            for cnt_pos = 1:length(pos)
+                if find(cluster{cnt_mode}==pos(cnt_pos)+(b-1)*NG)
+                    cc(gud(cnt_pos),b) = coef{cntred}(gud(cnt_pos),b);
+                end
             end
         end
-    end
-    ccc = cell(1,1);
-    ccc{1} = cell(1,ncl);
-    if is_real
-        for cnt = 1:ncl
-            ccc{1}{cnt}{1} = cc(cnt,:);
-            ccc{1}{cnt}{2} = zeros(1,NG);
-        end
-    else
-        ccc{1}{1}{2} = zeros(1,NG);
-        cnt_nclp1 = 1;
-        cnt_nclp2 = 1;
-        for cnt = 1:ncl
-            for cnt2 = 1:2
-                if cnt2 == 1
-                    ccc{1}{cnt}{cnt2} = cc(cnt_nclp1+nclp/2-1,:);
-                    cnt_nclp1 = cnt_nclp1 + 1;
-                else if cnt ~= 1
-                        ccc{1}{cnt}{cnt2} = cc(-cnt_nclp2+nclp/2,:);
-                        cnt_nclp2 = cnt_nclp2 + 1;
+        ccc{cntred} = cell(1,ncl{cntred});
+        if is_real
+            for cnt = 1:ncl{cntred}
+                ccc{cntred}{cnt}{1} = cc(cnt,:);
+                ccc{cntred}{cnt}{2} = zeros(1,NG);
+            end
+        else
+            ccc{cntred}{1}{2} = zeros(1,NG);
+            cnt_nclp1 = 1;
+            cnt_nclp2 = 1;
+            for cnt = 1:ncl{cntred}
+                for cnt2 = 1:2
+                    if cnt2 == 1
+                        ccc{cntred}{cnt}{cnt2} = cc(cnt_nclp1+nclp{cntred}/2-1,:);
+                        cnt_nclp1 = cnt_nclp1 + 1;
+                    else if cnt ~= 1
+                            ccc{cntred}{cnt}{cnt2} = cc(-cnt_nclp2+nclp{cntred}/2,:);
+                            cnt_nclp2 = cnt_nclp2 + 1;
+                        end
                     end
                 end
             end

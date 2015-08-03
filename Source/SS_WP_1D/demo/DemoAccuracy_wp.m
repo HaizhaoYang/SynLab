@@ -50,8 +50,8 @@ for cnt = 1:6
     N = 1024-num;
     xo = [0:N-1]/N;
     amp = 0.1;
-    F1 = 20;
-    F2 = 15;
+    F1 = 60;
+    F2 = 45;
     
     xx = xo + amp*sin(2*pi*xo);
     f1u = 2*exp(2*pi*i*F1*2*xx);
@@ -125,95 +125,6 @@ for cnt = 1:6
     err(cnt,:) = [cnt rslt{cnt,1}.wpterr rslt{cnt,1}.sstCerr rslt{cnt,1}.sstTerr];
 end
 err(1:6,:)
-save 'Accuracy.mat' err rslt;
+%save 'Accuracy.mat' err rslt;
 
 
-
-
-% 
-% err = cell(4,1); errTemp = zeros(3,1);
-% for cnt = 1:4
-%     if (1)
-%         ggg= fff(1:end-11);
-%         ggh = ffu(1:end-11);
-%         NN=N-10;
-%         xx=xh(1:end-11);
-%         
-%         eps = 1e-2;
-%         res = 2;
-%         NG = round(NN/32);
-%         is_real = 0;
-%         is_unif = 0;
-%         typeNUFFT = cnt;
-%         R_high = NN/2;
-%         R_low = 0;
-%         rad = 1;
-%         is_cos = 1;
-%         t_sc = 1/2;
-%         epsl = 1e-4;
-%         xo = xx;
-%         ggg = [ggg 0];
-%         xo = [xo 0];
-%         
-%         coefCell = wp1_fwd(ggg, is_real, is_unif, typeNUFFT, xo ,NG, R_high, R_low,  rad,is_cos, t_sc);
-%         gg = wp1_inv(coefCell, NN, is_real, R_high,R_low, rad, is_cos, t_sc);
-%         gg = gg(1:end-1);
-%         errTemp(1) = max(abs(gg-ggh));
-%         figure;subplot(1,2,1);hold on;plot(real(ggh),'b');plot(real(gg),'.r');hold off; axis tight;
-%         subplot(1,2,2);hold on;plot(imag(ggh),'b');plot(imag(gg),'.r');hold off; axis tight;
-%         [ss_energy coefTensor InsFreq] = ss_wp1_fwd(ggg,is_real,is_unif,typeNUFFT, xo ,NG,R_high,R_low,rad,is_cos,t_sc,epsl,res);
-%         cluster = cell(1,1);  temp = zeros(size(ss_energy)); cluster{1} = find(temp==0);
-%         [mode, amplt, num_mode] = ss_wp1_inv(cluster, coefTensor, InsFreq, is_real, NN, R_high, R_low, rad, is_cos, t_sc, res);
-%         mode = mode(1:end-1);
-%         errTemp(2) = max(abs(mode-ggh));
-%         T = cell(1,1); T{1} = ss_energy;
-%         [mode, amplt, num_mode] = ss_wp1_invT(T, coefTensor, InsFreq, is_real, NN, R_high, R_low, rad, is_cos, t_sc, res);
-%         mode = mode(1:end-1);
-%         errTemp(3) = max(abs(mode-ggh));
-%         err{cnt,1} = [err{cnt,1} errTemp];
-%     end
-%     
-%     if (1)
-%         ggg= real(fff(1:end-11));
-%         ggh = real(ffu(1:end-11));
-%         NN=N-10;
-%         xx=xh(1:end-11);
-%         
-%         eps = 1e-2;
-%         res = 2;
-%         NG = round(NN/32);
-%         is_real = 1;
-%         is_unif = 0;
-%         typeNUFFT = 1;
-%         R_high = NN/2;
-%         R_low = 0;
-%         rad = 1;
-%         is_cos = 1;
-%         t_sc = 1/2;
-%         epsl = 1e-4;
-%         xo = xx;
-%         ggg = [ggg 0];
-%         xo = [xo 0];
-%         
-%         coefCell = wp1_fwd(ggg, is_real, is_unif, typeNUFFT, xo ,NG, R_high, R_low,  rad,is_cos, t_sc);
-%         gg = wp1_inv(coefCell, NN, is_real, R_high,R_low, rad, is_cos, t_sc);
-%         gg = gg(1:end-1);
-%         errTemp(1) = max(abs(gg-ggh));
-%         figure;subplot(1,2,1);hold on;plot(real(ggh),'b');plot(real(gg),'.r');hold off; axis tight;
-%         subplot(1,2,2);hold on;plot(imag(ggh),'b');plot(imag(gg),'.r');hold off; axis tight;
-%         [ss_energy coefTensor InsFreq] = ss_wp1_fwd(ggg,is_real,is_unif,typeNUFFT, xo ,NG,R_high,R_low,rad,is_cos,t_sc,epsl,res);
-%         cluster = cell(1,1);  temp = zeros(size(ss_energy)); cluster{1} = find(temp==0);
-%         [mode, amplt, num_mode] = ss_wp1_inv(cluster, coefTensor, InsFreq, is_real, NN, R_high, R_low, rad, is_cos, t_sc, res);
-%         mode = mode(1:end-1);
-%         errTemp(2) = max(abs(mode-ggh));
-%         T = cell(1,1); T{1} = ss_energy;
-%         [mode, amplt, num_mode] = ss_wp1_invT(T, coefTensor, InsFreq, is_real, NN, R_high, R_low, rad, is_cos, t_sc, res);
-%         mode = mode(1:end-1);
-%         errTemp(3) = max(abs(mode-ggh));
-%         err{cnt,1} = [err{cnt,1} errTemp];
-%     end
-% end
-% save 'err.mat' err;
-% for cnt = 1:4
-%     err{cnt,1}
-% end

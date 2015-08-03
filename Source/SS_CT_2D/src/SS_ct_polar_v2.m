@@ -1,4 +1,7 @@
-function [kb avgdx avgdy] = SS_ct_polar_v3(num_direction,fff,sz,NB,rad,is_real,radiusRange,angleRange,epsl,red,t_sc, s_sc,is_cos,  wedge_length_coarse)
+function [kb avgdx avgdy] = SS_ct_polar_v2(num_direction,fff,sz,NB,rad,is_real,radiusRange,angleRange,epsl,red,t_sc, s_sc,is_cos,  wedge_length_coarse)
+% Highly redundant SST
+% Generate multiframes by time-frequency dilation and rotation
+%
 % Input:
 % fff is the image
 % sz(1) is the number of samples in the vertical direction in the image
@@ -237,7 +240,7 @@ for cntredR = 1:red(2)
                 end
             end
             for cnt2 = cntRange
-            %for cnt2 = 1:nbangles{1,cntredR}(cnt)
+                %for cnt2 = 1:nbangles{1,cntredR}(cnt)
                 if cnt2 < nbangles{1,cntredR}(cnt)
                     pos = find(level{cnt}.polar_a>=(cnt2-1+cntredA/red(1))*angles{1,cntredR}(cnt) & level{cnt}.polar_a < (cnt2+cntredA/red(1))*angles{1,cntredR}(cnt));
                     tiling{cnt-1}{1,cnt2} = struct('polar_a',0,'index_1',0,'index_2',0,'X_val',0,'X1_val',0,'X2_val',0,'lowpass',0,'hipass',0);
@@ -352,7 +355,7 @@ for cntredR = 1:red(2)
                 end
             end
             for cnt2 = cntRange
-            %for cnt2 = 1:nbangles{1,cntredR}(cnt)
+                %for cnt2 = 1:nbangles{1,cntredR}(cnt)
                 temp = zeros(sz);
                 x1 = mod(tiling{cnt-1}{1,cnt2}.index_1+pN1+1,sz(1))+1;
                 x2 = mod(tiling{cnt-1}{1,cnt2}.index_2+pN2+1,sz(2))+1;

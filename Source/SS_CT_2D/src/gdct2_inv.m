@@ -1,8 +1,14 @@
 function x = gdct2_inv(C, N1, N2, is_real, R_high,R_low, rad, is_cos, t_sc, s_sc, wedge_length_coarse)
-% gdct2_inv.m - 2D Inverse Generalized Discrete Curvelet Transform
+% gdct2_inv.m - 2D Inverse Generalized Discrete Curvelet Transform for
+% gdct_fwd.m
 %
 % Inputs
-%   C           Coefficients of generalized discrete curvelet transform
+%   C           Cell array of curvelet coefficients.
+%               C{j}{l}(k1,k2) is the coefficient at
+%                   - scale j: integer, from coarsest to finest scale,
+%                   - angle l: integer, starts on the right and
+%                   increases counter clockwise,
+%                   - position k1,k2: both integers, size doesn't change
 %   [N1 N2]     The size of the original image
 %
 % Optional Inputs
@@ -26,12 +32,7 @@ function x = gdct2_inv(C, N1, N2, is_real, R_high,R_low, rad, is_cos, t_sc, s_sc
 %               [default set to 8]
 %
 % Outputs
-%   C           Cell array of curvelet coefficients.
-%               C{j}{l}(k1,k2) is the coefficient at
-%                   - scale j: integer, from coarsest to finest scale,
-%                   - angle l: integer, starts on the right and
-%                   increases counter clockwise,
-%                   - position k1,k2: both integers, size doesn't change
+%   x           N1-by-N2 matrix
 %               
 %by Haizhao Yang
 

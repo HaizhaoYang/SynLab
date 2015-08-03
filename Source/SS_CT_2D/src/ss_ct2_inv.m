@@ -1,4 +1,4 @@
-function img = ss_ct2_inv(ss_energy,coefCell,coefTensor,LocWavVecx,LocWavVecy,imgSize,R_low,R_high,NB,rad,is_real,t_sc,s_sc,is_cos,wedge_length_coarse)
+function img = ss_ct2_inv(ss_energy,coefCell,coefTensor,LocWavVecx,LocWavVecy,imgSize,R_low,R_high,NB,rad,is_real,t_sc,s_sc,red,is_cos,wedge_length_coarse)
 % ss_ct2_inv.m - 2D Inverse Synchrosqueezed Curvelet Transform
 %
 % Inputs:
@@ -21,6 +21,8 @@ function img = ss_ct2_inv(ss_energy,coefCell,coefTensor,LocWavVecx,LocWavVecy,im
 %                    [default set to 1-1/8]
 %   s_sc             scaling parameter for angle
 %                    [default set to 1/2+1/8]
+%   red         a parameter for redundancy
+%               [ default set to 1]
 %   is_cos           Type of the window function
 %                    0: C^infinity window function
 %                    1: cosine window function
@@ -34,6 +36,8 @@ function img = ss_ct2_inv(ss_energy,coefCell,coefTensor,LocWavVecx,LocWavVecy,im
 %
 %by Haizhao Yang
 
+% TODO: insert non-uniform transform
+
 if nargin < 6, error('Not enough inputs!'); end;
 Nx = imgSize(1);
 Ny = imgSize(2);
@@ -45,8 +49,9 @@ if nargin < 10, rad = 1; end;
 if nargin < 11, is_real = 0; end;
 if nargin < 12, t_sc = 1 - 1/8; end;
 if nargin < 13, s_sc = 1/2 + 1/8; end;
-if nargin < 14, is_cos = 1; end;
-if nargin < 15, wedge_length_coarse = 8; end;
+if nargin < 14, red = 1; end;
+if nargin < 15, is_cos = 1; end;
+if nargin < 16, wedge_length_coarse = 8; end;
 
 dd = zeros(size(coefTensor));
 [SPx SPy] = size(coefCell{1}{1});
@@ -85,4 +90,4 @@ for g=1:ncl
 end
 
 R_low = 0;
-img = gdct2_inv(ddd,Nx,Ny,is_real,R_high*sqrt(2),R_low,rad,is_cos,t_sc,s_sc,wedge_length_coarse);
+img = gdct2_inv_red(ddd,Nx,Ny,is_real,R_high*sqrt(2),R_low,rad,is_cos,t_sc,s_sc,red,wedge_length_coarse);

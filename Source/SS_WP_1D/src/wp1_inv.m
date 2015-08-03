@@ -32,9 +32,8 @@ function [x amplt] = wp1_inv(C, N, is_real, R_high,R_low, rad, is_cos, t_sc, is_
 %   amplt       recovered amplitude, if x is a single wave-like component
 %
 %by Haizhao Yang
-
 NG = length(C{1}{1}{1});
-XX = zeros(1,N);
+red = length(C);
 if nargin < 3, is_real = 0; end;
 if nargin < 7, is_cos = 1; end;
 if nargin < 8, t_sc = 1 - 1/4; end;
@@ -58,15 +57,19 @@ if nargin < 6, rad = 1; end;
 if R<=R_low, error('R_low is too large! R_low at most %f',R); end;
 if rad > 2, display('rad too large! rad is set up to be 1'); rad = 1; end;
 wedge_length_coarse = wedge_length_coarse*rad;
-wedge_length = 2;
-wedge_end = [R R+2];
-while wedge_end(1) > wedge_length_coarse | length(wedge_end)<4
-    Length = rad*wedge_end(1)^t_sc/2;
-    wedge_length = [Length wedge_length];
-    wedge_end = [(wedge_end(1)-Length) wedge_end];
+wedge_length = cell(1,red);
+wedge_end = cell(1,red);
+da = rad*R^t_sc/2/red;
+for cntred = 1:red
+    wedge_length{1,cntred} = 2;
+    wedge_end{1,cntred} = [R R+2]+(cntred-1)*da;
+    while wedge_end{1,cntred}(1) > wedge_length_coarse | length(wedge_end{1,cntred})<4
+        Length = rad*wedge_end{1,cntred}(1)^t_sc/2;
+        wedge_length{1,cntred} = [Length wedge_length{1,cntred}];
+        wedge_end{1,cntred} = [(wedge_end{1,cntred}(1)-Length) wedge_end{1,cntred}];
+    end
+    wedge_length{1,cntred} = [wedge_end{1,cntred}(1) wedge_length{1,cntred}];
 end
-wedge_length = [wedge_end(1) wedge_length];
-
 
 if mod(N,2) == 0
     pN = N/2;
@@ -78,295 +81,313 @@ end
 Pos_index = pos_vec;
 
 if R_low == 0
-    nbscales = length(wedge_end);
-    
-    %temp = wedge_length(3:end) +wedge_length(2:end-1);
-    
-    %Polar coordinate
+    XX = cell(1,red);
+    nbscales = cell(1,red);
+    level = cell(1,red);
     Pos_radius = abs(Pos_index);
-    
-    level = cell(1,nbscales);%the information of fictitious tiling is nonnecessary
-    %temp = Pos_radius;
-    for cnt = 1:nbscales
-        level{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
-        if cnt == 1
-            temp = floor(wedge_end(cnt))+1;
-            %st = (-temp+2+(N-mod(N,2))/2);
-            %ed = (temp-1+(N+2-mod(N,2))/2);
-            st = (-temp+1+(N-mod(N,2))/2);
-            ed = (temp-2+(N+2-mod(N,2))/2);
-            pos = st:ed;%find(temp<=wedge_end(cnt));
-        else %if cnt<nbscales-1
-            stOld = st;
-            edOld = ed;
-            temp = floor(wedge_end(cnt))+1;
-            %st = max((-temp+2+(N-mod(N,2))/2),1);
-            %ed = min((temp-1+(N+2-mod(N,2))/2),N);
-            st = max((-temp+1+(N-mod(N,2))/2),1);
-            ed = min((temp-2+(N+2-mod(N,2))/2),N);
-            pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
-        end
-        level{cnt}.polar_r = Pos_radius(pos);
-        level{cnt}.index = Pos_index(pos);
-        level{cnt}.X_val = zeros(size(pos));
-        if cnt>1
-            if ~is_cos
-                level{cnt}.lowpass = fdct_wrapping_window((wedge_end(cnt)-level{cnt}.polar_r)/wedge_length(cnt));
-            else
-                level{cnt}.lowpass = gdct_cos((wedge_end(cnt)-level{cnt}.polar_r)/wedge_length(cnt));
+    for cntred = 1:red
+        XX{cntred} = zeros(1,N);
+        nbscales{cntred} = length(wedge_end{cntred});
+        level{cntred} = cell(1,nbscales{cntred});%the information of fictitious tiling is nonnecessary
+        for cnt = 1:nbscales{cntred}
+            level{cntred}{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
+            if cnt == 1
+                temp = floor(wedge_end{cntred}(cnt))+1;
+                %st = (-temp+2+(N-mod(N,2))/2);
+                %ed = (temp-1+(N+2-mod(N,2))/2);
+                st = (-temp+1+(N-mod(N,2))/2);
+                ed = (temp-2+(N+2-mod(N,2))/2);
+                pos = st:ed;%find(temp<=wedge_end(cnt));
+            else %if cnt<nbscales-1
+                stOld = st;
+                edOld = ed;
+                temp = floor(wedge_end{cntred}(cnt))+1;
+                %st = max((-temp+2+(N-mod(N,2))/2),1);
+                %ed = min((temp-1+(N+2-mod(N,2))/2),N);
+                st = max((-temp+1+(N-mod(N,2))/2),1);
+                ed = min((temp-2+(N+2-mod(N,2))/2),N);
+                pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
             end
-            level{cnt}.hipass = sqrt(1-(level{cnt}.lowpass).^2);
-        end
-        %temp(pos)= 10^10;
-    end
-    
-    tiling = cell(1,nbscales-1);
-    for cnt = 3:nbscales
-        tiling{cnt-1} = cell(2,2);
-        for cnt2 = 1:2
-            if cnt2 == 1
-                pos = find(level{cnt}.index>=0);
-            else
-                pos = find(level{cnt}.index<0);
+            level{cntred}{cnt}.polar_r = Pos_radius(pos);
+            level{cntred}{cnt}.index = Pos_index(pos);
+            level{cntred}{cnt}.X_val = zeros(size(pos));
+            if cnt>1
+                if ~is_cos
+                    level{cntred}{cnt}.lowpass = fdct_wrapping_window((wedge_end{cntred}(cnt)-level{cntred}{cnt}.polar_r)/wedge_length{cntred}(cnt));
+                else
+                    level{cntred}{cnt}.lowpass = gdct_cos((wedge_end{cntred}(cnt)-level{cntred}{cnt}.polar_r)/wedge_length{cntred}(cnt));
+                end
+                level{cntred}{cnt}.hipass = sqrt(1-(level{cntred}{cnt}.lowpass).^2);
             end
-            tiling{cnt-1}{1,cnt2} = struct('index',0,'X_val',0);
-            tiling{cnt-1}{1,cnt2}.index = level{cnt}.index(pos);
-            tiling{cnt-1}{1,cnt2}.X_val = zeros(size(pos));
-            if cnt2 == 1
-                pos = find(level{cnt-1}.index>=0);
-            else
-                pos = find(level{cnt-1}.index<0);
-            end
-            tiling{cnt-1}{2,cnt2} = struct('index',0,'X_val',0);
-            tiling{cnt-1}{2,cnt2}.index = level{cnt-1}.index(pos);
-            tiling{cnt-1}{2,cnt2}.X_val = zeros(size(pos));
         end
     end
-    tiling{1} = cell(1,1);
-    
-    %generate C
-    fac = 1;
-    temp = fftshift(fft(ifftshift(C{1}{1}{1})))/(sqrt(NG));
-    x1 = mod(level{1}.index,NG)+1;
-    XX(level{1}.index+pN+1) = temp(x1);
-    x1 = mod(level{2}.index,NG)+1;
-    XX(level{2}.index+pN+1) = temp(x1).*(level{2}.lowpass);
-    if 1
-        for cnt =3:nbscales
+    tiling = cell(1,red);
+    for cntred = 1:red
+        tiling{cntred} = cell(1,nbscales{cntred}-1);
+        for cnt = 3:nbscales{cntred}
+            tiling{cntred}{cnt-1} = cell(2,2);
+            for cnt2 = 1:2
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt}.index<0);
+                end
+                tiling{cntred}{cnt-1}{1,cnt2} = struct('index',0,'X_val',0);
+                tiling{cntred}{cnt-1}{1,cnt2}.index = level{cntred}{cnt}.index(pos);
+                tiling{cntred}{cnt-1}{1,cnt2}.X_val = zeros(size(pos));
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt-1}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt-1}.index<0);
+                end
+                tiling{cntred}{cnt-1}{2,cnt2} = struct('index',0,'X_val',0);
+                tiling{cntred}{cnt-1}{2,cnt2}.index = level{cntred}{cnt-1}.index(pos);
+                tiling{cntred}{cnt-1}{2,cnt2}.X_val = zeros(size(pos));
+            end
+        end
+        tiling{cntred}{1} = cell(1,1);
+    end
+    for cntred = 1:red
+        temp = fftshift(fft(ifftshift(C{cntred}{1}{1})))/(sqrt(NG));
+        x1 = mod(level{cntred}{1}.index,NG)+1;
+        XX{cntred}(level{cntred}{1}.index+pN+1) = temp(x1);
+        x1 = mod(level{cntred}{2}.index,NG)+1;
+        XX{cntred}(level{cntred}{2}.index+pN+1) = temp(x1).*(level{cntred}{2}.lowpass);
+        for cnt =3:nbscales{cntred}
             if is_fac == 1
-                fac = wedge_end(cnt)-wedge_end(cnt-1);
+                fac = wedge_end{cntred}(cnt)-wedge_end{cntred}(cnt-1);
             else
                 fac = 1;
             end
             for cnt2 = 1:2
-                temp = fftshift(fft(ifftshift(C{1}{cnt-1}{cnt2})))/sqrt(NG)/fac;
-                x1 = mod(tiling{cnt-1}{1,cnt2}.index+pN+1,NG)+1;
+                temp = fftshift(fft(ifftshift(C{cntred}{cnt-1}{cnt2})))/sqrt(NG)/fac;
+                x1 = mod(tiling{cntred}{cnt-1}{1,cnt2}.index+pN+1,NG)+1;
                 if cnt2 == 1
-                    pos = find(level{cnt}.index>=0);
+                    pos = find(level{cntred}{cnt}.index>=0);
                 else
-                    pos = find(level{cnt}.index<0);
+                    pos = find(level{cntred}{cnt}.index<0);
                 end
-                tiling{cnt-1}{1,cnt2}.X_val = tiling{cnt-1}{1,cnt2}.X_val + temp(x1).*(level{cnt}.lowpass(pos));
-                x1 = mod(tiling{cnt-1}{2,cnt2}.index+pN+1,NG)+1;
+                tiling{cntred}{cnt-1}{1,cnt2}.X_val = tiling{cntred}{cnt-1}{1,cnt2}.X_val + temp(x1).*(level{cntred}{cnt}.lowpass(pos));
+                x1 = mod(tiling{cntred}{cnt-1}{2,cnt2}.index+pN+1,NG)+1;
                 if cnt2 == 1
-                    pos = find(level{cnt-1}.index>=0);
+                    pos = find(level{cntred}{cnt-1}.index>=0);
                 else
-                    pos = find(level{cnt-1}.index<0);
+                    pos = find(level{cntred}{cnt-1}.index<0);
                 end
-                tiling{cnt-1}{2,cnt2}.X_val = tiling{cnt-1}{2,cnt2}.X_val + temp(x1).*(level{cnt-1}.hipass(pos));
+                tiling{cntred}{cnt-1}{2,cnt2}.X_val = tiling{cntred}{cnt-1}{2,cnt2}.X_val + temp(x1).*(level{cntred}{cnt-1}.hipass(pos));
             end
         end
-    end
-    for cnt = 3:nbscales
-        for cnt2 = 1:2
-            if cnt2 == 1
-                pos = find(level{cnt}.index>=0);
+        for cnt = 3:nbscales{cntred}
+            for cnt2 = 1:2
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt}.index<0);
+                end
+                level{cntred}{cnt}.X_val(pos) = level{cntred}{cnt}.X_val(pos) + tiling{cntred}{cnt-1}{1,cnt2}.X_val;
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt-1}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt-1}.index<0);
+                end
+                level{cntred}{cnt-1}.X_val(pos) = level{cntred}{cnt-1}.X_val(pos) + tiling{cntred}{cnt-1}{2,cnt2}.X_val;
+            end
+        end
+        for cnt = 2:nbscales{cntred}
+            XX{cntred}(level{cntred}{cnt}.index+pN+1) = XX{cntred}(level{cntred}{cnt}.index+pN+1) + level{cntred}{cnt}.X_val;
+        end
+        %XX = XX(end:-1:1);%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if is_real
+            if mod(N,2) == 0
+                vec1 = 2:N;
             else
-                pos = find(level{cnt}.index<0);
+                vec1 = 1:N;
             end
-            level{cnt}.X_val(pos) = level{cnt}.X_val(pos) + tiling{cnt-1}{1,cnt2}.X_val;
-            if cnt2 == 1
-                pos = find(level{cnt-1}.index>=0);
+            temp = XX{cntred}(vec1);
+            XX{cntred}(vec1) = real(temp + temp(end:-1:1)) + i*imag(temp - temp(end:-1:1));
+            
+            if mod(N,2) == 0
+                pos1 = N/2+1;
             else
-                pos = find(level{cnt-1}.index<0);
+                pos1 = (N+1)/2;
             end
-            level{cnt-1}.X_val(pos) = level{cnt-1}.X_val(pos) + tiling{cnt-1}{2,cnt2}.X_val;
+            XX{cntred}(pos1) = XX{cntred}(pos1)/2;
         end
     end
-    for cnt = 2:nbscales
-        XX(level{cnt}.index+pN+1) = XX(level{cnt}.index+pN+1) + level{cnt}.X_val;
+    x = zeros(1,N);
+    for cntred = 1:red
+        x = x + fftshift(ifft2(ifftshift(XX{cntred})))*sqrt(N);
     end
-    %XX = XX(end:-1:1);%!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    if is_real
-        if mod(N,2) == 0
-            vec1 = 2:N;
-        else
-            vec1 = 1:N;
-        end
-        temp = XX(vec1);
-        XX(vec1) = real(temp + temp(end:-1:1)) + i*imag(temp - temp(end:-1:1));
-        
-        if mod(N,2) == 0
-            pos1 = N/2+1;
-        else
-            pos1 = (N+1)/2;
-        end
-        XX(pos1) = XX(pos1)/2;
-    end
-    x = fftshift(ifft2(ifftshift(XX)))*sqrt(N);
+    x = x/red;
     amplt = abs(x);
     if is_real, x = real(x); end;
     
 else
-    
-    cut_pos = find(wedge_end<R_low);
-    cut_num = length(cut_pos);
-    while cut_num < 2
-        Length = rad*wedge_end(1)^t_sc/2;
-        wedge_end = [(wedge_end(1)-Length) wedge_end];
-        wedge_length = wedge_length(2:end);
-        wedge_length = [wedge_end(1) Length wedge_length];
-        cut_pos = find(wedge_end<R_low);
-        cut_num = length(cut_pos);
-    end
-    
-    temp = wedge_end(cut_num);
-    wedge_length = wedge_length(cut_num+2:end);
-    wedge_length = [R_low-min(2,R_low-temp), min(2,R_low-temp), wedge_end(cut_num+1)-R_low, wedge_length];
-    wedge_end = wedge_end(cut_num+1:end);
-    wedge_end = [R_low-min(2,R_low-temp), R_low, wedge_end];
-    
-    nbscales = length(wedge_end);
-    temp = cell(1,nbscales-1);
-    for j = 2:nbscales-1
-        temp{j} = C{1}{j-1};
-    end
-    C{1} = temp;
-    
-    %Polar coordinate
+    XX = cell(1,red);
     Pos_radius = abs(Pos_index);
-    
-    level = cell(1,nbscales);%the information of fictitious tiling is nonnecessary
-    %temp = Pos_radius;
-    for cnt = 1:nbscales
-        level{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
-        if cnt == 1
-            temp = floor(wedge_end(cnt))+1;
-            st = (-temp+1+(N-mod(N,2))/2);
-            ed = (temp-2+(N+2-mod(N,2))/2);
-            pos = st:ed;%find(temp<=wedge_end(cnt));
-        else %if cnt<nbscales-1
-            stOld = st;
-            edOld = ed;
-            temp = floor(wedge_end(cnt))+1;
-            %st = max((-temp+2+(N-mod(N,2))/2),1);
-            %ed = min((temp-1+(N+2-mod(N,2))/2),N);
-            st = max((-temp+1+(N-mod(N,2))/2),1);
-            ed = min((temp-2+(N+2-mod(N,2))/2),N);
-            pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
+    level = cell(1,red);
+    tiling = cell(1,red);
+    for cntred = 1:red
+        XX{cntred} = zeros(1,N);
+        cut_pos = find(wedge_end{cntred}<R_low);
+        cut_num = length(cut_pos);
+        while cut_num < 2
+            Length = rad*wedge_end{cntred}(1)^t_sc/2;
+            wedge_end{cntred} = [(wedge_end{cntred}(1)-Length) wedge_end{cntred}];
+            wedge_length{cntred} = wedge_length{cntred}(2:end);
+            wedge_length{cntred} = [wedge_end{cntred}(1) Length wedge_length{cntred}];
+            cut_pos = find(wedge_end{cntred}<R_low);
+            cut_num = length(cut_pos);
         end
-        level{cnt}.polar_r = Pos_radius(pos);
-        level{cnt}.index = Pos_index(pos);
-        level{cnt}.X_val = zeros(1,length(pos));
-        if cnt>1
-            if ~is_cos
-                level{cnt}.lowpass = fdct_wrapping_window((wedge_end(cnt)-level{cnt}.polar_r)/wedge_length(cnt));
-            else
-                level{cnt}.lowpass = gdct_cos((wedge_end(cnt)-level{cnt}.polar_r)/wedge_length(cnt));
-            end
-            level{cnt}.hipass = sqrt(1-(level{cnt}.lowpass).^2);
+        
+        
+        temp = wedge_end{cntred}(cut_num);
+        wedge_length{cntred} = wedge_length{cntred}(cut_num+2:end);
+        wedge_length{cntred} = [R_low-min(2,R_low-temp), min(2,R_low-temp), wedge_end{cntred}(cut_num+1)-R_low, wedge_length{cntred}];
+        wedge_end{cntred} = wedge_end{cntred}(cut_num+1:end);
+        wedge_end{cntred} = [R_low-min(2,R_low-temp), R_low, wedge_end{cntred}];
+        
+        nbscales{cntred} = length(wedge_end{cntred});
+        temp = cell(1,nbscales{cntred}-1);
+        for j = 2:nbscales{cntred}-1
+            temp{j} = C{cntred}{j-1};
         end
-        %temp(pos)= 10^10;
+        C{cntred} = temp;
     end
     
-    tiling = cell(1,nbscales-1);
-    for cnt = 3:nbscales
-        tiling{cnt-1} = cell(2,2);
-        for cnt2 = 1:2
-            if cnt2 == 1
-                pos = find(level{cnt}.index>=0);
-            else
-                pos = find(level{cnt}.index<0);
+    for cntred = 1:red
+        level{cntred} = cell(1,nbscales{cntred});%the information of fictitious tiling is nonnecessary
+        for cnt = 1:nbscales{cntred}
+            level{cntred}{cnt} = struct('polar_r',0,'index',0,'X_val',0,'lowpass',0,'hipass',0);
+            if cnt == 1
+                temp = floor(wedge_end{cntred}(cnt))+1;
+                st = (-temp+1+(N-mod(N,2))/2);
+                ed = (temp-2+(N+2-mod(N,2))/2);
+                pos = st:ed;%find(temp<=wedge_end(cnt));
+            else %if cnt<nbscales-1
+                stOld = st;
+                edOld = ed;
+                temp = floor(wedge_end{cntred}(cnt))+1;
+                %st = max((-temp+2+(N-mod(N,2))/2),1);
+                %ed = min((temp-1+(N+2-mod(N,2))/2),N);
+                st = max((-temp+1+(N-mod(N,2))/2),1);
+                ed = min((temp-2+(N+2-mod(N,2))/2),N);
+                pos = [st:(stOld-1) (edOld+1):ed];%find(temp<=wedge_end(cnt));
             end
-            tiling{cnt-1}{1,cnt2} = struct('index',0,'X_val',0);
-            tiling{cnt-1}{1,cnt2}.index = level{cnt}.index(pos);
-            tiling{cnt-1}{1,cnt2}.X_val = zeros(1,length(pos));
-            if cnt2 == 1
-                pos = find(level{cnt-1}.index>=0);
-            else
-                pos = find(level{cnt-1}.index<0);
+            level{cntred}{cnt}.polar_r = Pos_radius(pos);
+            level{cntred}{cnt}.index = Pos_index(pos);
+            level{cntred}{cnt}.X_val = zeros(1,length(pos));
+            if cnt>1
+                if ~is_cos
+                    level{cntred}{cnt}.lowpass = fdct_wrapping_window((wedge_end{cntred}(cnt)-level{cntred}{cnt}.polar_r)/wedge_length{cntred}(cnt));
+                else
+                    level{cntred}{cnt}.lowpass = gdct_cos((wedge_end{cntred}(cnt)-level{cntred}{cnt}.polar_r)/wedge_length{cntred}(cnt));
+                end
+                level{cntred}{cnt}.hipass = sqrt(1-(level{cntred}{cnt}.lowpass).^2);
             end
-            tiling{cnt-1}{2,cnt2} = struct('index',0,'X_val',0);
-            tiling{cnt-1}{2,cnt2}.index = level{cnt-1}.index(pos);
-            tiling{cnt-1}{2,cnt2}.X_val = zeros(1,length(pos));
         end
     end
-    tiling{1} = cell(1,1);
     
-    if 1
-        for cnt =3:nbscales
+    for cntred = 1:red
+        tiling{cntred} = cell(1,nbscales{cntred}-1);
+        for cnt = 3:nbscales{cntred}
+            tiling{cntred}{cnt-1} = cell(2,2);
+            for cnt2 = 1:2
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt}.index<0);
+                end
+                tiling{cntred}{cnt-1}{1,cnt2} = struct('index',0,'X_val',0);
+                tiling{cntred}{cnt-1}{1,cnt2}.index = level{cntred}{cnt}.index(pos);
+                tiling{cntred}{cnt-1}{1,cnt2}.X_val = zeros(1,length(pos));
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt-1}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt-1}.index<0);
+                end
+                tiling{cntred}{cnt-1}{2,cnt2} = struct('index',0,'X_val',0);
+                tiling{cntred}{cnt-1}{2,cnt2}.index = level{cntred}{cnt-1}.index(pos);
+                tiling{cntred}{cnt-1}{2,cnt2}.X_val = zeros(1,length(pos));
+            end
+        end
+        tiling{cntred}{1} = cell(1,1);
+        
+        for cnt =3:nbscales{cntred}
             if is_fac == 1
-                fac = wedge_end(cnt)-wedge_end(cnt-1);
+                fac = wedge_end{cntred}(cnt)-wedge_end{cntred}(cnt-1);
             else
                 fac = 1;
             end
             for cnt2 = 1:2
-                temp = fftshift(fft(ifftshift(C{1}{cnt-1}{cnt2})))/sqrt(NG)/fac;
-                x1 = mod(tiling{cnt-1}{1,cnt2}.index+pN+1,NG)+1;
+                temp = fftshift(fft(ifftshift(C{cntred}{cnt-1}{cnt2})))/sqrt(NG)/fac;
+                x1 = mod(tiling{cntred}{cnt-1}{1,cnt2}.index+pN+1,NG)+1;
                 if cnt2 == 1
-                    pos = find(level{cnt}.index>=0);
+                    pos = find(level{cntred}{cnt}.index>=0);
                 else
-                    pos = find(level{cnt}.index<0);
+                    pos = find(level{cntred}{cnt}.index<0);
                 end
-                tiling{cnt-1}{1,cnt2}.X_val = tiling{cnt-1}{1,cnt2}.X_val + temp(x1).*(level{cnt}.lowpass(pos));
-                x1 = mod(tiling{cnt-1}{2,cnt2}.index+pN+1,NG)+1;
+                if length(pos)>0
+                    tiling{cntred}{cnt-1}{1,cnt2}.X_val = tiling{cntred}{cnt-1}{1,cnt2}.X_val + temp(x1).*(level{cntred}{cnt}.lowpass(pos));
+                end
+                x1 = mod(tiling{cntred}{cnt-1}{2,cnt2}.index+pN+1,NG)+1;
                 if cnt2 == 1
-                    pos = find(level{cnt-1}.index>=0);
+                    pos = find(level{cntred}{cnt-1}.index>=0);
                 else
-                    pos = find(level{cnt-1}.index<0);
+                    pos = find(level{cntred}{cnt-1}.index<0);
                 end
-                tiling{cnt-1}{2,cnt2}.X_val = tiling{cnt-1}{2,cnt2}.X_val + temp(x1).*(level{cnt-1}.hipass(pos));
+                if length(pos)>0
+                    tiling{cntred}{cnt-1}{2,cnt2}.X_val = tiling{cntred}{cnt-1}{2,cnt2}.X_val + temp(x1).*(level{cntred}{cnt-1}.hipass(pos));
+                end
             end
         end
-    end
-    for cnt = 3:nbscales
-        for cnt2 = 1:2
-            if cnt2 == 1
-                pos = find(level{cnt}.index>=0);
-            else
-                pos = find(level{cnt}.index<0);
+        for cnt = 3:nbscales{cntred}
+            for cnt2 = 1:2
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt}.index<0);
+                end
+                if length(pos)>0
+                    level{cntred}{cnt}.X_val(pos) = level{cntred}{cnt}.X_val(pos) + tiling{cntred}{cnt-1}{1,cnt2}.X_val;
+                end
+                if cnt2 == 1
+                    pos = find(level{cntred}{cnt-1}.index>=0);
+                else
+                    pos = find(level{cntred}{cnt-1}.index<0);
+                end
+                if length(pos)>0
+                    level{cntred}{cnt-1}.X_val(pos) = level{cntred}{cnt-1}.X_val(pos) + tiling{cntred}{cnt-1}{2,cnt2}.X_val;
+                end
             end
-            level{cnt}.X_val(pos) = level{cnt}.X_val(pos) + tiling{cnt-1}{1,cnt2}.X_val;
-            if cnt2 == 1
-                pos = find(level{cnt-1}.index>=0);
-            else
-                pos = find(level{cnt-1}.index<0);
-            end
-            level{cnt-1}.X_val(pos) = level{cnt-1}.X_val(pos) + tiling{cnt-1}{2,cnt2}.X_val;
         end
-    end
-    for cnt = 2:nbscales
-        XX(level{cnt}.index+pN+1) = XX(level{cnt}.index+pN+1) + level{cnt}.X_val;
-    end
-    
-    %XX = XX(end:-1:1,:);%!!!!!!!!!!!!!!!!!!!!!!!!!check
-    if is_real
-        if mod(N,2) == 0
-            vec1 = 2:N;
-        else
-            vec1 = 1:N;
+        for cnt = 2:nbscales{cntred}
+            XX{cntred}(level{cntred}{cnt}.index+pN+1) = XX{cntred}(level{cntred}{cnt}.index+pN+1) + level{cntred}{cnt}.X_val;
         end
-        temp = XX(vec1);
-        XX(vec1) = real(temp + temp(end:-1:1)) + i*imag(temp - temp(end:-1:1));
         
-        if mod(N,2) == 0
-            pos1 = N/2+1;
-        else
-            pos1 = (N+1)/2;
+        %XX = XX(end:-1:1,:);%!!!!!!!!!!!!!!!!!!!!!!!!!check
+        if is_real
+            if mod(N,2) == 0
+                vec1 = 2:N;
+            else
+                vec1 = 1:N;
+            end
+            temp = XX{cntred}(vec1);
+            XX{cntred}(vec1) = real(temp + temp(end:-1:1)) + i*imag(temp - temp(end:-1:1));
+            
+            if mod(N,2) == 0
+                pos1 = N/2+1;
+            else
+                pos1 = (N+1)/2;
+            end
+            XX{cntred}(pos1) = XX{cntred}(pos1)/2;
         end
-        XX(pos1) = XX(pos1)/2;
     end
-    x = fftshift(ifft2(ifftshift(XX)))*sqrt(N);
+    x = zeros(1,N);
+    for cntred = 1:red
+        x = x + fftshift(ifft2(ifftshift(XX{cntred})))*sqrt(N);
+    end
+    x = x/red;
     amplt = abs(x);
     if is_real, x = real(x); end;
     

@@ -37,6 +37,10 @@ tempPath = [tempPath front 'Source' back 'SS_CT_2D' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'demo' back];
 tempPath = [tempPath front 'Source' back 'SS_CT_2D' back 'src' back];
 
+tempPath = [tempPath front 'Source' back 'SS_WP_3D' back];
+tempPath = [tempPath front 'Source' back 'SS_WP_3D' back 'demo' back];
+tempPath = [tempPath front 'Source' back 'SS_WP_3D' back 'src' back];
+
 tempPath = [tempPath front 'Source' back 'SS_WP_1D' back];
 tempPath = [tempPath front 'Source' back 'SS_WP_1D' back 'demo' back];
 tempPath = [tempPath front 'Source' back 'SS_WP_1D' back 'src' back];
