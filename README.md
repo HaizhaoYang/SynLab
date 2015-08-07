@@ -1,5 +1,5 @@
 # SynLab
-
+ 
 1. OVERVIEW
 
 1D synchrosqueezed wave packet transforms (SSWPT):    
@@ -45,7 +45,6 @@ run the file SetPath.m first. It will automatically add all the MATLAB codes to 
 4. COPY RIGHT
 
 SynLab is copyright reserved. For further information, please contact 
-Contact information
 Haizhao Yang at haizhao@stanford.edu
 Jianfeng Lu at jianfeng@math.duke.edu
 Lexing Ying at lexing@math.stanford.edu
