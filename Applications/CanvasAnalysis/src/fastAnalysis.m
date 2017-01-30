@@ -170,31 +170,31 @@ for cntm = 1:numm
     for cntn = 1:numn
         if cntm == 1 & cntn == 1
             temp = HorThreCell{cntm,cntn};
-            HorThre(1:SPgh(1)*0.75,1:SPgh(2)*0.75) = temp(1:SPgh(1)*0.75,1:SPgh(2)*0.75);
+            HorThre(1:SPgh(1),1:SPgh(2)) = temp(1:SPgh(1),1:SPgh(2));
             temp = VerThreCell{cntm,cntn};
-            VerThre(1:SPgv(1)*0.75,1:SPgv(2)*0.75) = temp(1:SPgv(1)*0.75,1:SPgv(2)*0.75);
+            VerThre(1:SPgv(1),1:SPgv(2)) = temp(1:SPgv(1),1:SPgv(2));
             temp = HorAglCell{cntm,cntn};
-            HorAgl(1:SPgh(1)*0.75,1:SPgh(2)*0.75) = temp(1:SPgh(1)*0.75,1:SPgh(2)*0.75);
+            HorAgl(1:SPgh(1),1:SPgh(2)) = temp(1:SPgh(1),1:SPgh(2));
             temp = VerAglCell{cntm,cntn};
-            VerAgl(1:SPgv(1)*0.75,1:SPgv(2)*0.75) = temp(1:SPgv(1)*0.75,1:SPgv(2)*0.75);
+            VerAgl(1:SPgv(1),1:SPgv(2)) = temp(1:SPgv(1),1:SPgv(2));
         else if cntm ==1 & cntn ~= 1
                 temp = HorThreCell{cntm,cntn};
-                HorThre(1:SPgh(1)*0.75,((SPgh(2)*0.25+1):SPgh(2))+0.5*SPgh(2)*(cntn-1)) = temp(1:SPgh(1)*0.75,SPgh(2)*0.25+1:end);
+                HorThre(1:SPgh(1),((SPgh(2)*0.25+1):SPgh(2))+0.5*SPgh(2)*(cntn-1)) = temp(1:SPgh(1),SPgh(2)*0.25+1:end);
                 temp = VerThreCell{cntm,cntn};
-                VerThre(1:SPgv(1)*0.75,((SPgv(2)*0.25+1):SPgv(2))+0.5*SPgv(2)*(cntn-1)) = temp(1:SPgv(1)*0.75,SPgv(2)*0.25+1:end);
+                VerThre(1:SPgv(1),((SPgv(2)*0.25+1):SPgv(2))+0.5*SPgv(2)*(cntn-1)) = temp(1:SPgv(1),SPgv(2)*0.25+1:end);
                 temp = HorAglCell{cntm,cntn};
-                HorAgl(1:SPgh(1)*0.75,((SPgh(2)*0.25+1):SPgh(2))+0.5*SPgh(2)*(cntn-1)) = temp(1:SPgh(1)*0.75,SPgh(2)*0.25+1:end);
+                HorAgl(1:SPgh(1),((SPgh(2)*0.25+1):SPgh(2))+0.5*SPgh(2)*(cntn-1)) = temp(1:SPgh(1),SPgh(2)*0.25+1:end);
                 temp = VerAglCell{cntm,cntn};
-                VerAgl(1:SPgv(1)*0.75,((SPgv(2)*0.25+1):SPgv(2))+0.5*SPgv(2)*(cntn-1)) = temp(1:SPgv(1)*0.75,SPgv(2)*0.25+1:end);
+                VerAgl(1:SPgv(1),((SPgv(2)*0.25+1):SPgv(2))+0.5*SPgv(2)*(cntn-1)) = temp(1:SPgv(1),SPgv(2)*0.25+1:end);
             else if cntm ~= 1 & cntn == 1
                     temp = HorThreCell{cntm,cntn};
-                    HorThre(((SPgh(1)*0.25+1):SPgh(1))+0.5*SPgh(1)*(cntm-1),1:SPgh(2)*0.75) = temp(SPgh(1)*0.25+1:end,1:SPgh(2)*0.75);
+                    HorThre(((SPgh(1)*0.25+1):SPgh(1))+0.5*SPgh(1)*(cntm-1),1:SPgh(2)) = temp(SPgh(1)*0.25+1:end,1:SPgh(2));
                     temp = VerThreCell{cntm,cntn};
-                    VerThre(((SPgv(1)*0.25+1):SPgv(1))+0.5*SPgv(1)*(cntm-1),1:SPgv(2)*0.75) = temp(SPgv(1)*0.25+1:end,1:SPgv(2)*0.75);
+                    VerThre(((SPgv(1)*0.25+1):SPgv(1))+0.5*SPgv(1)*(cntm-1),1:SPgv(2)) = temp(SPgv(1)*0.25+1:end,1:SPgv(2));
                     temp = HorAglCell{cntm,cntn};
-                    HorAgl(((SPgh(1)*0.25+1):SPgh(1))+0.5*SPgh(1)*(cntm-1),1:SPgh(2)*0.75) = temp(SPgh(1)*0.25+1:end,1:SPgh(2)*0.75);
+                    HorAgl(((SPgh(1)*0.25+1):SPgh(1))+0.5*SPgh(1)*(cntm-1),1:SPgh(2)) = temp(SPgh(1)*0.25+1:end,1:SPgh(2));
                     temp = VerAglCell{cntm,cntn};
-                    VerAgl(((SPgv(1)*0.25+1):SPgv(1))+0.5*SPgv(1)*(cntm-1),1:SPgv(2)*0.75) = temp(SPgv(1)*0.25+1:end,1:SPgv(2)*0.75);
+                    VerAgl(((SPgv(1)*0.25+1):SPgv(1))+0.5*SPgv(1)*(cntm-1),1:SPgv(2)) = temp(SPgv(1)*0.25+1:end,1:SPgv(2));
                 else
                     temp = HorThreCell{cntm,cntn};
                     HorThre(((SPgh(1)*0.25+1):SPgh(1))+0.5*SPgh(1)*(cntm-1),((SPgh(2)*0.25+1):SPgh(2))+0.5*SPgh(2)*(cntn-1)) = temp(SPgh(1)*0.25+1:end,SPgh(2)*0.25+1:end);
