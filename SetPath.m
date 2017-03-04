@@ -82,6 +82,10 @@ tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'data' 
 tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'src' back];
 tempPath = [tempPath front 'Applications' back 'GeneralModeDecom1D' back 'demo' back];
 
+tempPath = [tempPath front 'Applications' back 'CanvasRemoval' back];
+tempPath = [tempPath front 'Applications' back 'CanvasRemoval' back 'data' back];
+tempPath = [tempPath front 'Applications' back 'CanvasRemoval' back 'src' back];
+
 path(tempPath);
 
 disp('Begin to compile MEX files...');

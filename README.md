@@ -20,7 +20,7 @@ Art:  Canvas painting analysis for art forensics.
 
 2. INTRODUCTION
 
-SynLab is a collection of Matlab and MEX routines which implements 1D and 2D synchrosqueezed transforms proposed in [1]-[4]. It contains numerical examples in [2][5][6].
+SynLab is a collection of Matlab and MEX routines which implements 1D and 2D synchrosqueezed transforms proposed in [1]-[4]. It contains numerical examples in [2][5][6][9].
 
 [1] H. Yang. Synchrosqueezed wave packet transforms and diffeomorphism based spectral analysis for 1d general mode decompositions. Applied and Computational Harmonic Analysis, 39(1):33 – 66, 2015.
 
@@ -37,6 +37,8 @@ SynLab is a collection of Matlab and MEX routines which implements 1D and 2D syn
 [7] J. Lu, B. Wirth and H. Yang. Compbining 2d synchrosqueezed wave packet transforms with optimization for crystal image analysis. Journal of the Mechanics and Physics of Solids, pp. –, 2016. [Online]. Available: http://www.sciencedirect.com/science/article/pii/S0022509616300023
 
 [8] H. Yang. Oscillatory data analysis and fast algorithms for integral operators, Ph.D. thesis, Stanford University, 2015.
+
+[9] Bruno Cornelis, Haizhao Yang, Alex Goodfriend, Noelle Ocon, Jianfeng Lu, and Ingrid Daubechies, Removal of Canvas Patterns in Digital Acquisitions of Paintings, IEEE Transactions on Image Processing, Volume: 26, Issue: 1, Jan. 2017.
 
 3. INSTALLING SYNLAB
 
