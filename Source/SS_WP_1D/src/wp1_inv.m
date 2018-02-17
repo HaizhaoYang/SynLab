@@ -41,7 +41,7 @@ if nargin < 9, is_fac = 1; end;
 if nargin < 10, wedge_length_coarse = 4; end;
 if wedge_length_coarse < 4
     wedge_length_coarse = 4;
-    display('wedge_length_coarse is too small. Run with wedge_length_coarse = 4.');
+    %display('wedge_length_coarse is too small. Run with wedge_length_coarse = 4.');
 end
 
 % Initialization: data structure
@@ -51,7 +51,7 @@ if nargin < 5, R_low = 0; end;
 if ~is_real, R_low = 0; end;
 if R_low <= wedge_length_coarse
     R_low = 0;
-    display('R_low <= wedge_length_coarse, set R_low = 0.');
+    %display('R_low <= wedge_length_coarse, set R_low = 0.');
 end
 if nargin < 6, rad = 1; end;
 if R<=R_low, error('R_low is too large! R_low at most %f',R); end;
